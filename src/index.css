@@ -4,13 +4,14 @@
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --color-accent: #10b981; /* Premium Emerald/Teal accent */
+  --color-accent: #10b981;
   --color-dark-bg: #09090b;
   --color-dark-card: #161619;
 }
 
+/* ── BASE ────────────────────────────────────────────────────────────────── */
 html {
-  scroll-behavior: smooth;
+  /* Disabled smooth scroll so it doesn't conflict with sticky logic */
   background-color: #09090b;
   color: #e4e4e7;
   -webkit-font-smoothing: antialiased;
@@ -22,28 +23,58 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Custom scrollbar styling */
+/* ── CINEMATIC SCROLL SYSTEM ─────────────────────────────────────────────── */
+
+.cinematic-scroll-inner {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.cinematic-scroll-inner::-webkit-scrollbar {
+  display: none;
+}
+
+.cinematic-label {
+  font-size: clamp(4rem, 16vw, 14rem);
+  line-height: 1;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+/* ── CUSTOM SCROLLBAR ────────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
   background: #09090b;
 }
 ::-webkit-scrollbar-thumb {
   background: #27272a;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #3f3f46;
 }
 
-/* Focus styles for keyboard accessibility */
+/* ── FOCUS & UTILITIES ───────────────────────────────────────────────────── */
 *:focus-visible {
   outline: 2px solid #10b981;
   outline-offset: 4px;
 }
 
-/* Utility animations or overrides */
 .glow-subtle {
   box-shadow: 0 0 40px -10px rgba(16, 185, 129, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+section[id] {
+  min-height: auto;
 }
