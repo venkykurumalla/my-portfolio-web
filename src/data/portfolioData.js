@@ -69,42 +69,65 @@ export const portfolioData = {
       title: "AP Forest Academy Government Web",
       description: "Developed and deployed a production-ready government website for the A.P. State Forest Academy, providing a centralized platform for academy information and training resources. Built responsive web components and structured navigation for administration, officer training programs, syllabi, training materials, facilities, government orders, news, gallery, results, and contact information. Implemented interactive UI sections, responsive layouts, PDF/document viewing, and organized resource navigation to improve accessibility and usability. Managed frontend development, asset integration, production builds, and deployment for desktop and mobile platforms.",
       technologies: ["React.js", "HTML", "CSS", "JavaScript", "Frontend Development", "Production Build"],
-      link: "#" // PLACEHOLDER
+      link: "https://www.apsfarjy.com/",
+      images: [
+        "/projects/ap-forest.png",
+        "/projects/ap-forest-1.png",
+        "/projects/ap-forest-2.png",
+        "/projects/ap-forest-3.png",
+        "/projects/ap-forest-4.png",
+        "/projects/ap-forest-5.png"
+      ]
     },
     {
       id: "smart-exam-portal",
       title: "Smart Examination Portal",
       description: "Developed and deployed a web-based examination platform to digitize the online assessment process. Implemented structured question presentation, online test workflows, answer submission, question management, and automated result evaluation. Designed responsive and interactive interfaces for smooth examination experiences across desktop and mobile devices, reducing manual evaluation and streamlining assessment.",
       technologies: ["React.js", "Web Development", "Interactive UI"],
-      link: "#" // PLACEHOLDER
+      link: "https://smartexamportel.vercel.app/",
+      images: [
+        "/projects/smart-exam.png",
+        "/projects/smart-exam-1.png",
+        "/projects/smart-exam-2.png",
+        "/projects/smart-exam-3.png",
+        "/projects/smart-exam-4.png"
+      ]
     },
     {
       id: "ai-tutor-app",
       title: "AI Tutor App",
       description: "Built an AI-powered learning platform for 6th to 10th grade students that provides instant answers to academic questions, personalized guidance, and an interactive learning experience through a user-friendly interface.",
       technologies: ["AI/LLM", "Prompt Engineering", "Interactive UI", "EdTech"],
-      link: "#" // PLACEHOLDER
+      link: "https://drive.google.com/file/d/1WGssZPjbpGkxTz3TrkBBDpSKCw0gsDwt/view",
+      images: []
     },
     {
       id: "riet-crt",
       title: "RIET CRT Learning Portal",
       description: "Developed and deployed a web-based learning portal for RIET College to support Campus Recruitment Training (CRT) classes. Created a centralized platform for students to access course modules, learning materials, practice resources, and assessments, helping streamline the delivery of CRT training and student preparation.",
       technologies: ["Web Development", "Learning Management", "Frontend"],
-      link: "#" // PLACEHOLDER
+      link: "https://rietcrt.netlify.app/",
+      images: [
+        "/projects/riet-crt.png",
+        "/projects/riet-crt-1.png",
+        "/projects/riet-crt-2.png",
+        "/projects/riet-crt-3.png",
+        "/projects/riet-crt-4.png"
+      ]
     },
     {
       id: "smart-ambulance",
       title: "On-Demand Smart Ambulance Mobile Application",
       description: "Developed a Flutter-based mobile application for emergency ambulance booking with real-time location tracking. Designed a user-friendly interface to improve coordination and response time during emergencies.",
       technologies: ["Flutter", "Mobile UI Design", "Real-time Tracking", "Geolocation"],
-      link: "#" // PLACEHOLDER
+      link: "https://drive.google.com/drive/folders/1hB9qKNbolIEDHHv9xrcqJ95VzIpWskKQ"
     },
     {
       id: "student-api",
       title: "Student Management API using Node.js and MongoDB",
       description: "Designed and developed REST APIs using Node.js, Express.js, and MongoDB. Implemented CRUD operations, database integration, and scalable backend architecture for efficient data management.",
       technologies: ["Node.js", "Express.js", "MongoDB", "RESTful API", "CRUD Operations"],
-      link: "#" // PLACEHOLDER
+      link: "https://github.com/venkykurumalla/mongo-DB"
     }
   ],
 
@@ -149,7 +172,7 @@ export const portfolioData = {
     {
       name: "Oracle Certified Foundations Associate – Oracle Cloud Infrastructure AI Foundations",
       issuer: "Oracle",
-      link: "#" // PLACEHOLDER: Update with verification link
+      link: "/certs/oracle-certification.pdf"
     }
   ]
 };

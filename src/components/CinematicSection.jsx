@@ -1,170 +1,208 @@
-import React, { useRef } from "react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useReducedMotion,
-  useSpring,
-} from "framer-motion";
+import React, { useRef, useLayoutEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Restoring the full-screen sticky Cinematic transition that you liked,
- * but significantly tuning the keyframes so it doesn't feel "stuck".
+ * CinematicSection — GSAP ScrollTrigger + Lenis powered
  * 
- * The issue before was that sections paused for too long (large dead zone)
- * while scrolling. We've tightened the enter/exit ranges so the page feels
- * constantly in motion and responsive to your scroll wheel.
+ * This replaces the old Framer Motion useSpring approach with
+ * GSAP's ScrollTrigger `scrub`, which is the industry standard
+ * for premium scroll-linked animations (used by iQOO, Apple, etc.)
+ * 
+ * KEY DIFFERENCE: `scrub: 1` means the animation is directly tied
+ * to the scroll position with a 1-second smoothing lag. This creates
+ * the "buttery" feel — the animation continues to glide for a moment
+ * after you stop scrolling, rather than stopping abruptly.
+ * 
+ * Combined with Lenis smooth scrolling, this gives the exact same
+ * premium feel as the iQOO Neo 10 product page.
  */
 export default function CinematicSection({
   id,
   label,
   children,
-  scrollMultiplier = 1.5,
   isLast = false,
 }) {
-  const prefersReduced = useReducedMotion();
-  const trackRef = useRef(null);
+  const sectionRef = useRef(null);
+  const contentRef = useRef(null);
+  const labelRef = useRef(null);
+  const bgRef = useRef(null);
 
-  // Track scroll progress across the whole tall div
-  const { scrollYProgress: rawScrollProgress } = useScroll({
-    target: trackRef,
-    offset: ["start end", "end start"],
-  });
+  useLayoutEffect(() => {
+    const section = sectionRef.current;
+    const content = contentRef.current;
+    const labelEl = labelRef.current;
+    const bgEl = bgRef.current;
+    if (!section || !content) return;
 
-  // 🧈 EXTRA BUTTER SMOOTHNESS: physics-based scroll damping
-  // This makes the transition glide to a halt instead of stopping rigidly.
-  const scrollYProgress = useSpring(rawScrollProgress, {
-    stiffness: 80,    // Soft tension for a relaxed pull
-    damping: 25,      // Smooth glide, no bounciness
-    mass: 0.5,        // Feels lightweight and responsive
-    restDelta: 0.0001
-  });
+    // Check for reduced motion preference
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // ─── ENTER PHASE  (progress 0 → 0.45) 
-  // Increased from 0.35 so it takes more of the scroll track, reducing the "stuck" time
-  const enterY = useTransform(
-    scrollYProgress,
-    [0, 0.45],
-    prefersReduced ? ["0vh", "0vh"] : ["60vh", "0vh"]
-  );
-  const enterScale = useTransform(
-    scrollYProgress,
-    [0, 0.45],
-    prefersReduced ? [1, 1] : [1.08, 1]
-  );
-  const enterOpacity = useTransform(scrollYProgress, [0.1, 0.35], [0, 1]);
+    const ctx = gsap.context(() => {
+      // ─── ENTER ANIMATION ─────────────────────────────────────
+      // Content slides up from below and fades in as section enters viewport
+      gsap.fromTo(
+        content,
+        {
+          y: prefersReduced ? 0 : 100, // Fixed pixels instead of yPercent to prevent tall sections from creating massive gaps
+          opacity: 0,
+          scale: prefersReduced ? 1 : 0.92,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 85%",      // Start when section top hits 85% of viewport
+            end: "top 20%",        // End when section top hits 20% of viewport
+            scrub: 1.2,            // 1.2s smooth lag — the magic butter
+            invalidateOnRefresh: true,
+          },
+        }
+      );
 
-  // ─── EXIT PHASE  (progress 0.55 → 1.0)
-  // Starts earlier (0.55 instead of 0.65). This leaves only a 10% "pause" 
-  // in the middle where it's fully active, making the scroll feel continuous.
-  const exitY = useTransform(
-    scrollYProgress,
-    [0.55, 1],
-    isLast || prefersReduced ? ["0vh", "0vh"] : ["0vh", "-40vh"]
-  );
-  const exitScale = useTransform(
-    scrollYProgress,
-    [0.55, 1],
-    isLast || prefersReduced ? [1, 1] : [1, 0.92]
-  );
-  const exitOpacity = useTransform(
-    scrollYProgress,
-    [0.55, 0.9],
-    isLast || prefersReduced ? [1, 1] : [1, 0]
-  );
+      // ─── EXIT ANIMATION ──────────────────────────────────────
+      // Content slides up and fades out as section leaves viewport
+      if (!isLast) {
+        gsap.fromTo(
+          content,
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+          },
+          {
+            y: prefersReduced ? 0 : -100, // Fixed pixels instead of yPercent
+            opacity: 0,
+            scale: prefersReduced ? 1 : 0.96,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "bottom 80%",   // Start exit when section bottom hits 80%
+              end: "bottom 10%",     // Complete exit when section bottom leaves
+              scrub: 1.2,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+      }
 
-  // ─── CINEMATIC LABEL overlay
-  const labelY = useTransform(
-    scrollYProgress,
-    [0, 0.45],
-    prefersReduced ? ["0vh", "0vh"] : ["25vh", "0vh"]
-  );
-  const labelScale = useTransform(
-    scrollYProgress,
-    [0, 0.4],
-    prefersReduced ? [1, 1] : [1.4, 1]
-  );
-  const labelOpacity = useTransform(scrollYProgress, [0, 0.2, 0.45, 0.65], [
-    0, 1, 1, 0,
-  ]);
+      // ─── GHOST LABEL ANIMATION ───────────────────────────────
+      // The label starts large and zooms down to normal size,
+      // creating the effect of coming from the display towards the back.
+      if (labelEl && !prefersReduced) {
+        // 1. Enter/Exit (Scale & Opacity)
+        const labelTL = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: "top 95%",
+            end: "bottom 5%",
+            scrub: 1.5,
+            invalidateOnRefresh: true,
+          },
+        });
 
-  const contentOpacity = useTransform(
-    scrollYProgress,
-    [0.25, 0.45],
-    [0, 1]
-  );
-  const contentY = useTransform(
-    scrollYProgress,
-    [0.25, 0.45],
-    prefersReduced ? ["0px", "0px"] : ["24px", "0px"]
-  );
+        labelTL
+          // ENTER: zoom from large to normal, fade in
+          .fromTo(
+            labelEl,
+            { scale: 1.8, opacity: 0, yPercent: 20 },
+            { scale: 1, opacity: 1, yPercent: 0, duration: 0.35, ease: "none" }
+          )
+          // HOLD: stay visible while content is being read
+          .to(labelEl, { scale: 1, opacity: 1, duration: 0.3, ease: "none" })
+          // EXIT: scale down slightly and fade out
+          .to(labelEl, {
+            scale: 0.8,
+            opacity: 0,
+            yPercent: -15,
+            duration: 0.35,
+            ease: "none",
+          });
+
+        // 2. Continuous Horizontal Parallax (Right to Left sweep)
+        // This runs independently over the entire scroll duration of the section
+        gsap.fromTo(
+          labelEl.querySelector('.cinematic-label'),
+          { x: "15vw" }, // Start pushed to the right
+          {
+            x: "-15vw",  // Sweep to the left
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1.5,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+      }
+
+      // ─── BACKGROUND PARALLAX GLOW ────────────────────────────
+      // Subtle parallax on the background glow element
+      if (bgEl && !prefersReduced) {
+        gsap.fromTo(
+          bgEl,
+          { yPercent: 20, opacity: 0 },
+          {
+            yPercent: -20,
+            opacity: 0.3,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 2,  // Extra smooth parallax
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+      }
+    }, section);
+
+    return () => ctx.revert(); // Clean up GSAP animations
+  }, [isLast]);
 
   return (
-    <div
-      ref={trackRef}
+    <section
+      ref={sectionRef}
       id={id}
-      style={{ height: `${scrollMultiplier * 100}vh` }}
-      className="relative"
+      className="cinematic-section relative"
     >
-      <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center">
-        {/* EXIT Wrapper */}
-        <motion.div
-          style={{
-            y: exitY,
-            scale: exitScale,
-            opacity: exitOpacity,
-            width: "100%",
-            height: "100%",
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {/* ENTER Wrapper */}
-          <motion.div
-            style={{
-              y: enterY,
-              scale: enterScale,
-              opacity: enterOpacity,
-              width: "100%",
-              height: "100%",
-              position: "absolute",
-              inset: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {/* The actual content container. Restored overflow-y-auto so tall content doesn't break, 
-                but since the dead-zone is small, it won't feel globally stuck. */}
-            <div className="w-full h-full overflow-y-auto cinematic-scroll-inner">
-              <motion.div
-                style={{ opacity: contentOpacity, y: contentY }}
-                className="w-full min-h-full flex flex-col justify-center"
-              >
-                {children}
-              </motion.div>
-            </div>
-          </motion.div>
-        </motion.div>
-
-        {/* Big Ghost Label */}
-        <motion.div
-          aria-hidden="true"
-          style={{
-            y: labelY,
-            scale: labelScale,
-            opacity: labelOpacity,
-          }}
-          className="pointer-events-none absolute inset-0 flex items-center justify-center z-20 select-none"
-        >
-          <span className="font-display font-black uppercase tracking-[0.12em] text-white/[0.06] cinematic-label">
-            {label}
-          </span>
-        </motion.div>
+      {/* Background parallax glow */}
+      <div
+        ref={bgRef}
+        className="absolute top-0 w-full h-screen pointer-events-none overflow-hidden z-0"
+        style={{ willChange: "transform" }}
+      >
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-accent/8 rounded-full blur-[120px]" />
       </div>
-    </div>
+
+      {/* Ghost label — visible behind content with zoom-from-front effect */}
+      <div
+        ref={labelRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute top-0 w-full h-screen flex items-center justify-center z-[1] select-none overflow-hidden"
+        style={{ willChange: "transform, opacity", opacity: 0 }}
+      >
+        <span className="font-display font-black uppercase tracking-[0.12em] text-white/15 cinematic-label drop-shadow-2xl">
+          {label}
+        </span>
+      </div>
+
+      {/* Main content */}
+      <div
+        ref={contentRef}
+        className="relative z-10"
+        style={{ willChange: "transform, opacity" }}
+      >
+        {children}
+      </div>
+    </section>
   );
 }

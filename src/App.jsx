@@ -9,50 +9,51 @@ import Education from "./components/sections/Education";
 import Certifications from "./components/sections/Certifications";
 import Contact from "./components/sections/Contact";
 import Footer from "./components/Footer";
+import SmoothScroll from "./components/SmoothScroll";
 import CinematicSection from "./components/CinematicSection";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-[#09090b] text-[#e4e4e7] selection:bg-accent selection:text-zinc-950">
-      <Navbar />
+    <SmoothScroll>
+      <div className="min-h-screen bg-[#09090b] text-[#e4e4e7] selection:bg-accent selection:text-zinc-950">
+        <Navbar />
 
-      <main>
-        {/* We use a shorter track (1.5) generally, but slightly longer for Projects */}
-        <CinematicSection id="home" label="HOME" scrollMultiplier={1.4}>
-          <Hero />
-        </CinematicSection>
+        <main>
+          <CinematicSection id="home" label="HOME">
+            <Hero />
+          </CinematicSection>
 
-        <CinematicSection id="about" label="ABOUT" scrollMultiplier={1.6}>
-          <About />
-        </CinematicSection>
+          <CinematicSection id="about" label="ABOUT">
+            <About />
+          </CinematicSection>
 
-        <CinematicSection id="skills" label="SKILLS" scrollMultiplier={1.8}>
-          <Skills />
-        </CinematicSection>
+          <CinematicSection id="skills" label="SKILLS">
+            <Skills />
+          </CinematicSection>
 
-        <CinematicSection id="projects" label="PROJECTS" scrollMultiplier={2.2}>
-          <Projects />
-        </CinematicSection>
+          <CinematicSection id="projects" label="PROJECTS">
+            <Projects />
+          </CinematicSection>
 
-        <CinematicSection id="experience" label="EXPERIENCE" scrollMultiplier={1.6}>
-          <Experience />
-        </CinematicSection>
+          <CinematicSection id="experience" label="EXPERIENCE">
+            <Experience />
+          </CinematicSection>
 
-        <CinematicSection id="education" label="EDUCATION" scrollMultiplier={1.5}>
-          <Education />
-        </CinematicSection>
+          <CinematicSection id="education" label="EDUCATION">
+            <Education />
+          </CinematicSection>
 
-        <CinematicSection id="certifications" label="CERTIFICATIONS" scrollMultiplier={1.5}>
-          <Certifications />
-        </CinematicSection>
+          <CinematicSection id="certifications" label="CERTIFICATIONS">
+            <Certifications />
+          </CinematicSection>
 
-        {/* Contact doesn't need to exit, so we set isLast={true} */}
-        <CinematicSection id="contact" label="CONTACT" scrollMultiplier={1.4} isLast={true}>
-          <Contact />
-        </CinematicSection>
-      </main>
+          <CinematicSection id="contact" label="CONTACT" isLast={true}>
+            <Contact />
+          </CinematicSection>
+        </main>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </SmoothScroll>
   );
 }

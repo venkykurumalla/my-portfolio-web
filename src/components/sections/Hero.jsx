@@ -1,23 +1,14 @@
-import React, { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
 import { ArrowRight, Download, Mail } from "lucide-react";
 import { portfolioData } from "../../data/portfolioData";
 
 export default function Hero() {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"]
-  });
-
-  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.15, delayChildren: 0.2 }
+      transition: { staggerChildren: 0.15, delayChildren: 0.3 }
     }
   };
 
@@ -27,29 +18,27 @@ export default function Hero() {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+      transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] }
     }
   };
 
   return (
     <section
-      ref={ref}
       id="home-inner"
       className="relative min-h-screen flex items-center justify-center pt-24 pb-16 bg-[#09090b]"
     >
-      {/* Background layer */}
-      <motion.div style={{ y: bgY }} className="absolute inset-0 z-0 pointer-events-none">
+      {/* Background layer — parallax handled by CinematicSection's GSAP */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f23_1px,transparent_1px),linear-gradient(to_bottom,#1f1f23_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-[0.25]" />
         <motion.div
           animate={{ scale: [1, 1.05, 1], opacity: [0.5, 0.8, 0.5] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] md:w-[600px] h-[300px] md:h-[500px] bg-accent/10 rounded-full blur-[100px] pointer-events-none"
         />
-      </motion.div>
+      </div>
 
       <div className="max-w-4xl mx-auto px-6 md:px-12 text-center relative z-10">
         <motion.div
-          style={{ y: textY }}
           variants={containerVariants}
           initial="hidden"
           animate="visible"

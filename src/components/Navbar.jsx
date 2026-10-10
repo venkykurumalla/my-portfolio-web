@@ -7,6 +7,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
+  const [hoveredSection, setHoveredSection] = useState(null);
 
   const navItems = [
     { label: "Home", href: "#home" },
@@ -62,27 +63,35 @@ export default function Navbar() {
           </a>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className={`text-sm font-medium tracking-wide transition-colors duration-200 relative py-1 ${
-                  activeSection === item.href.replace("#", "")
-                    ? "text-white"
-                    : "text-zinc-400 hover:text-zinc-200"
-                }`}
-              >
-                {item.label}
-                {activeSection === item.href.replace("#", "") && (
-                  <motion.span
-                    layoutId="activeIndicator"
-                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-accent"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
-              </a>
-            ))}
+          <nav className="hidden lg:flex items-center space-x-1 p-1.5 bg-zinc-900/40 border border-zinc-800/40 rounded-full backdrop-blur-xl shadow-lg shadow-black/20">
+            {navItems.map((item) => {
+              const itemKey = item.href.replace("#", "");
+              const isActive = activeSection === itemKey;
+              
+              return (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className={`relative px-4 py-2 text-sm font-medium tracking-wide transition-colors duration-300 rounded-full z-10 ${
+                    isActive ? "text-white" : "text-zinc-400 hover:text-zinc-200"
+                  }`}
+                >
+                  <span className="relative z-10 drop-shadow-sm">{item.label}</span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="navPill"
+                      className="absolute inset-0 bg-white/5 border border-white/5 rounded-full z-0 shadow-[0_4px_16px_rgba(255,255,255,0.02)] backdrop-blur-2xl"
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 35,
+                        mass: 0.8
+                      }}
+                    />
+                  )}
+                </a>
+              );
+            })}
           </nav>
 
           {/* CTA Link to GitHub / Mobile Menu Trigger */}
