@@ -214,7 +214,7 @@ export default function Projects() {
       style={{ height: `${slides.length * 35}vh` }}
     >
       {/* Sticky container that stays in the viewport */}
-      <div className="sticky top-0 h-[100dvh] flex flex-col justify-center overflow-hidden py-10 md:py-16">
+      <div className="sticky top-0 h-[100dvh] flex flex-col justify-start md:justify-center overflow-hidden pt-24 pb-10 md:py-16">
         
         {/* Background glow */}
         <div className="absolute inset-0 pointer-events-none opacity-30">
