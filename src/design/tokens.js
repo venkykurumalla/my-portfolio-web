@@ -44,6 +44,8 @@ const dark = {
   "--glass-shadow":
     "inset 0 1px 0 rgba(255,255,255,0.16), 0 24px 60px -18px rgba(0,0,0,0.65), 0 6px 18px rgba(0,0,0,0.3)",
   "--sheen": "rgba(255, 255, 255, 0.2)",
+  "--card-solid": "#11131d",
+  "--sheet": "rgba(6, 7, 12, 0.96)",
   "--aurora-opacity": "0.6",
   "--grain-opacity": "0.05",
   "--aurora-blue": colors.blue,
@@ -66,6 +68,8 @@ const light = {
   "--glass-shadow":
     "inset 0 1px 0 rgba(255,255,255,0.9), 0 24px 60px -20px rgba(60,72,140,0.35), 0 6px 18px rgba(60,72,140,0.12)",
   "--sheen": "rgba(255, 255, 255, 0.9)",
+  "--card-solid": "#f7f8fd",
+  "--sheet": "rgba(237, 240, 250, 0.96)",
   "--aurora-opacity": "0.5",
   "--grain-opacity": "0.035",
   "--aurora-blue": "#93B8FF",

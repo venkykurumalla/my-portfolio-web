@@ -53,3 +53,13 @@ export function useSkew(max = 5) {
   );
   return ref;
 }
+
+// Runs `callback` only when the user hasn't asked for reduced motion. Without it, content just
+// stays in its normal, fully visible state (no hidden start states are ever applied).
+export function useMotionSafe(callback, config) {
+  return useGSAP(() => {
+    const mm = gsap.matchMedia();
+    mm.add("(prefers-reduced-motion: no-preference)", () => callback());
+    return () => mm.revert();
+  }, config);
+}

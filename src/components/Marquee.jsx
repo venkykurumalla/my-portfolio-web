@@ -33,7 +33,7 @@ export default function Marquee({ children, direction = 1, speed = 55 }) {
 
       const tick = (_t, delta) => {
         if (!visible) return;
-        const targetBoost = phone ? 1 : 1 + Math.min(Math.abs(scrollState.velocity) * 0.4, 9);
+        const targetBoost = 1 + Math.min(Math.abs(scrollState.velocity) * (phone ? 0.25 : 0.4), phone ? 5 : 9);
         boost += (targetBoost - boost) * 0.08;
         x -= direction * base * (delta / 1000) * boost;
         if (direction > 0 && x <= -width) x += width;
