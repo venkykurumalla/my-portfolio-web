@@ -47,9 +47,12 @@ export default function Hero() {
           {/* Badge */}
           <motion.div
             variants={itemVariants}
-            className="inline-flex items-center space-x-2 px-3 py-1.5 border border-zinc-800 bg-zinc-900/60 backdrop-blur-md rounded-full text-xs font-semibold tracking-wider text-accent uppercase mb-6"
+            className="inline-flex items-center space-x-2.5 px-3.5 py-1.5 border border-white/10 bg-zinc-900/60 backdrop-blur-md rounded-full text-[11px] font-semibold tracking-[0.18em] text-accent uppercase mb-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)]"
           >
-            <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
+            </span>
             <span>AI & Full-Stack Development</span>
           </motion.div>
 
@@ -77,32 +80,38 @@ export default function Hero() {
             {portfolioData.hero.objective}
           </motion.p>
 
-          {/* CTAs */}
+          {/* CTAs - Button-in-Button Island Architecture */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full sm:w-auto"
+            className="flex flex-col sm:flex-row gap-3.5 justify-center items-center w-full sm:w-auto"
           >
             <a
               href="#projects"
-              className="group flex items-center justify-center w-full sm:w-auto bg-accent hover:bg-accent/90 text-zinc-950 font-bold px-6 py-3.5 rounded text-sm tracking-wide transition-all duration-300 hover:scale-105 active:scale-95"
+              className="group relative flex items-center justify-between sm:justify-center gap-3.5 w-full sm:w-auto bg-accent hover:bg-emerald-400 text-zinc-950 font-bold pl-6 pr-2.5 py-2.5 rounded-full text-sm tracking-wide transition-all duration-200 active:scale-[0.98] shadow-lg shadow-accent/10"
             >
-              View Projects
-              <ArrowRight className="ml-2 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+              <span>View Projects</span>
+              <span className="w-8 h-8 rounded-full bg-black/10 flex items-center justify-center transition-transform duration-200 ease-out group-hover:translate-x-1 group-hover:-translate-y-0.5 group-hover:scale-105">
+                <ArrowRight className="w-4 h-4 text-zinc-950" />
+              </span>
             </a>
+            
             <a
               href="#contact"
-              className="flex items-center justify-center w-full sm:w-auto border border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900/80 text-zinc-300 hover:text-white font-semibold px-6 py-3.5 rounded text-sm tracking-wide transition-all duration-300 hover:scale-105 active:scale-95"
+              className="group relative flex items-center justify-between sm:justify-center gap-3.5 w-full sm:w-auto border border-white/10 bg-zinc-900/50 hover:bg-zinc-900/90 text-zinc-200 hover:text-white font-semibold pl-6 pr-2.5 py-2.5 rounded-full text-sm tracking-wide transition-all duration-200 active:scale-[0.98] shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)]"
             >
-              Contact Me
-              <Mail className="ml-2 w-4 h-4" />
+              <span>Contact Me</span>
+              <span className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center transition-transform duration-200 ease-out group-hover:scale-105">
+                <Mail className="w-4 h-4 text-zinc-400 group-hover:text-white" />
+              </span>
             </a>
+
             <a
               href="/VenkateshKurumalla.pdf?v=2"
               download="Venkatesh_Kurumalla_Resume.pdf"
-              className="flex items-center justify-center w-full sm:w-auto text-zinc-400 hover:text-zinc-200 font-semibold px-6 py-3.5 rounded text-sm tracking-wide transition-all duration-300 hover:scale-105 active:scale-95 group"
+              className="group relative flex items-center justify-center gap-2.5 w-full sm:w-auto text-zinc-400 hover:text-zinc-200 font-medium px-5 py-3 rounded-full text-sm tracking-wide transition-all duration-200 active:scale-[0.98]"
             >
-              Download Resume
-              <Download className="ml-2 w-4 h-4 transition-transform duration-300 group-hover:translate-y-0.5" />
+              <span>Resume</span>
+              <Download className="w-4 h-4 transition-transform duration-200 ease-out group-hover:translate-y-0.5 text-zinc-400 group-hover:text-zinc-200" />
             </a>
           </motion.div>
         </motion.div>

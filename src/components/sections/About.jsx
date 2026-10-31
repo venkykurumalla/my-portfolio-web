@@ -5,18 +5,20 @@ import { portfolioData } from "../../data/portfolioData";
 
 const ObjectiveCard = ({ pt, delay = 0 }) => (
   <motion.div
-    initial={{ opacity: 0, y: 24, scale: 0.96 }}
-    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-    viewport={{ once: true, margin: "-80px" }}
-    transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
-    className="p-5 bg-zinc-900/40 border border-zinc-800/80 rounded hover:border-zinc-700 hover:bg-zinc-900/80 transition-all duration-500 group hover:shadow-lg hover:shadow-accent/5"
+    initial={{ opacity: 0, y: 18 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-40px" }}
+    transition={{ duration: 0.5, delay, ease: [0.23, 1, 0.32, 1] }}
+    whileHover={{ y: -2 }}
+    whileTap={{ scale: 0.98 }}
+    className="double-bezel group cursor-default transition-all duration-300"
   >
-    <div className="flex items-start space-x-4">
-      <div className="p-2 border border-zinc-850 bg-zinc-900 rounded shrink-0 group-hover:border-accent/40 group-hover:scale-110 transition-all duration-300">
+    <div className="double-bezel-inner p-5 flex items-start space-x-4 h-full group-hover:border-accent/30 group-hover:bg-zinc-900/60 transition-colors duration-300">
+      <div className="p-2.5 border border-white/10 bg-zinc-900/80 rounded-xl shrink-0 group-hover:border-accent/40 group-hover:scale-105 transition-all duration-300">
         {pt.icon}
       </div>
       <div>
-        <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-1 group-hover:text-accent transition-colors duration-300">
+        <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-1.5 group-hover:text-accent transition-colors duration-300">
           {pt.title}
         </h3>
         <p className="text-xs sm:text-sm text-zinc-400 font-medium leading-relaxed group-hover:text-zinc-300 transition-colors duration-300">
@@ -58,14 +60,14 @@ export default function About() {
 
       <div className="max-w-5xl mx-auto px-6 md:px-12 relative z-10 w-full">
         {/* Heading */}
-        <div className="mb-16">
-          <span className="text-xs font-bold uppercase tracking-widest text-accent mb-2 block">
+        <div className="mb-16" data-reveal>
+          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-accent mb-2.5 inline-block px-3 py-1 rounded-full border border-accent/20 bg-accent/5">
             About Me
           </span>
-          <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight text-white">
+          <h2 className="font-display text-3xl md:text-5xl font-extrabold tracking-tight text-white mt-1">
             Professional Objective
           </h2>
-          <div className="h-[2px] w-12 bg-accent mt-4" />
+          <div className="h-[2px] w-14 bg-accent mt-4 strike strike-active" />
         </div>
 
         {/* Info Grid */}
@@ -75,40 +77,33 @@ export default function About() {
             {portfolioData.about.description.map((para, idx) => (
               <motion.p
                 key={idx}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.6, delay: idx * 0.1 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.5, delay: idx * 0.1, ease: [0.23, 1, 0.32, 1] }}
                 className="text-zinc-400 font-medium text-base sm:text-lg leading-relaxed"
               >
                 {para}
               </motion.p>
             ))}
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="pt-4 grid grid-cols-2 gap-4"
-            >
+            <div className="pt-4 grid grid-cols-2 gap-4" data-reveal>
               {portfolioData.about.highlights.map((item, idx) => (
-                <motion.div
+                <div
                   key={idx}
-                  whileHover={{ scale: 1.05, x: 5 }}
-                  className="flex items-center space-x-2 text-sm text-zinc-300 group cursor-default"
+                  className="flex items-center space-x-2.5 text-sm text-zinc-300 group cursor-default transition-transform duration-200 hover:translate-x-1"
                 >
                   <Sparkles className="w-4 h-4 text-accent/80 shrink-0 group-hover:text-accent transition-colors" />
                   <span className="font-semibold group-hover:text-white transition-colors">{item}</span>
-                </motion.div>
+                </div>
               ))}
-            </motion.div>
+            </div>
           </div>
 
           {/* Cards Panel */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-5">
             {objectivePoints.map((pt, idx) => (
-              <ObjectiveCard key={idx} pt={pt} delay={idx * 0.12} />
+              <ObjectiveCard key={idx} pt={pt} delay={idx * 0.1} />
             ))}
           </div>
         </div>

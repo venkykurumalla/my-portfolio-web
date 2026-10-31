@@ -11,10 +11,12 @@ import Contact from "./components/sections/Contact";
 import Footer from "./components/Footer";
 import SmoothScroll from "./components/SmoothScroll";
 import CinematicSection from "./components/CinematicSection";
+import TasteRevealObserver from "./components/TasteRevealObserver";
 
 export default function App() {
   return (
     <SmoothScroll>
+      <TasteRevealObserver />
       <div className="min-h-screen bg-[#09090b] text-[#e4e4e7] selection:bg-accent selection:text-zinc-950">
         <Navbar />
 
