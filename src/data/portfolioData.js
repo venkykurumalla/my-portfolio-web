@@ -5,7 +5,8 @@
 export const portfolioData = {
   personalInfo: {
     name: "Venkatesh Kurumalla",
-    title: "Software Engineer",
+    title: "Aspiring Software Engineer | Full-Stack & AI/LLM",
+    resume: "/resume.pdf",
     phone: "+91 8074455377",
     email: "venkykurumalla7@gmail.com",
     location: "Jaggampeta, Andhra Pradesh",
@@ -19,6 +20,7 @@ export const portfolioData = {
   hero: {
     headline: "Aspiring Software Engineer",
     supportingHeadline: "Full-Stack Web Development, AI, and Modern Applications.",
+    roles: ["Full-Stack Developer", "React Developer", "AI / LLM Enthusiast"],
     objective: "Aspiring Software Engineer with hands-on experience in Java, JavaScript, React.js, Node.js, MongoDB, and full-stack web development. Experienced in developing real-world web applications, REST APIs, and a government website for AP Forest Academy. Seeking an internship to apply technical skills and contribute to impactful, scalable applications."
   },
 
@@ -37,30 +39,14 @@ export const portfolioData = {
   },
 
   skills: [
-    {
-      category: "Programming",
-      items: ["Java", "JavaScript"]
-    },
-    {
-      category: "Web Development",
-      items: ["HTML", "CSS", "React.js", "Node.js"]
-    },
-    {
-      category: "Database",
-      items: ["MongoDB", "SQL"]
-    },
-    {
-      category: "Core Computer Science",
-      items: ["Data Structures & Algorithms (Intermediate)", "System Design", "Computer Networks"]
-    },
-    {
-      category: "AI/LLM",
-      items: ["Prompt Engineering", "Large Language Models (LLMs)"]
-    },
-    {
-      category: "Tools",
-      items: ["Git", "GitHub", "Postman"]
-    }
+    { category: "Languages", items: ["Java", "JavaScript"] },
+    { category: "Frontend", items: ["HTML", "CSS", "React.js"] },
+    { category: "Backend", items: ["Node.js", "Express.js", "Spring Boot", "REST APIs"] },
+    { category: "Database", items: ["MongoDB", "SQL"] },
+    { category: "Core Computer Science", items: ["DSA", "System Design", "Computer Networks"] },
+    { category: "AI / LLM", items: ["Prompt Engineering", "LLMs"] },
+    { category: "Tools", items: ["Git", "GitHub", "Postman"] },
+    { category: "Mobile", items: ["Flutter"] }
   ],
 
   projects: [
@@ -71,12 +57,12 @@ export const portfolioData = {
       technologies: ["React.js", "HTML", "CSS", "JavaScript", "Frontend Development", "Production Build"],
       link: "https://www.apsfarjy.com/",
       images: [
-        "/projects/ap-forest.png",
-        "/projects/ap-forest-1.png",
-        "/projects/ap-forest-2.png",
-        "/projects/ap-forest-3.png",
-        "/projects/ap-forest-4.png",
-        "/projects/ap-forest-5.png"
+        "/projects/ap-forest.webp",
+        "/projects/ap-forest-1.webp",
+        "/projects/ap-forest-2.webp",
+        "/projects/ap-forest-3.webp",
+        "/projects/ap-forest-4.webp",
+        "/projects/ap-forest-5.webp"
       ]
     },
     {
@@ -86,11 +72,11 @@ export const portfolioData = {
       technologies: ["React.js", "Web Development", "Interactive UI"],
       link: "https://smartexamportel.vercel.app/",
       images: [
-        "/projects/smart-exam.png",
-        "/projects/smart-exam-1.png",
-        "/projects/smart-exam-2.png",
-        "/projects/smart-exam-3.png",
-        "/projects/smart-exam-4.png"
+        "/projects/smart-exam.webp",
+        "/projects/smart-exam-1.webp",
+        "/projects/smart-exam-2.webp",
+        "/projects/smart-exam-3.webp",
+        "/projects/smart-exam-4.webp"
       ]
     },
     {
@@ -108,11 +94,11 @@ export const portfolioData = {
       technologies: ["Web Development", "Learning Management", "Frontend"],
       link: "https://rietcrt.netlify.app/",
       images: [
-        "/projects/riet-crt.png",
-        "/projects/riet-crt-1.png",
-        "/projects/riet-crt-2.png",
-        "/projects/riet-crt-3.png",
-        "/projects/riet-crt-4.png"
+        "/projects/riet-crt.webp",
+        "/projects/riet-crt-1.webp",
+        "/projects/riet-crt-2.webp",
+        "/projects/riet-crt-3.webp",
+        "/projects/riet-crt-4.webp"
       ]
     },
     {

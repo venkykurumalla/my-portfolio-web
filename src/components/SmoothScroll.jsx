@@ -1,68 +1,55 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import Lenis from "lenis";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap, ScrollTrigger, onReady, isReady, prefersReducedMotion, scrollState } from "../lib/motion";
 
 /**
- * SmoothScroll Provider
- * 
- * Uses Lenis to create momentum-based, buttery smooth scrolling —
- * the same technique used by iQOO, Apple, Samsung product pages.
- * 
- * Lenis interpolates between the user's scroll position and where
- * the page actually is, creating a silky glide effect. It then
- * syncs with GSAP's ScrollTrigger so all animations respond to
- * the smooth scroll position rather than the raw jerky browser scroll.
+ * Lenis smooth scroll driven by GSAP's ticker and synced with ScrollTrigger.
+ * Touch devices keep native momentum scrolling (syncTouch off) — it feels
+ * better on phones and avoids fighting the browser's URL-bar behaviour.
  */
 export default function SmoothScroll({ children }) {
-  const lenisRef = useRef(null);
-
   useEffect(() => {
-    // Create the Lenis smooth scroller
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    if (prefersReducedMotion()) return;
+
     const lenis = new Lenis({
-      lerp: 0.08,            // Lower = smoother/slower glide (0.08 is very buttery)
-      duration: 1.4,         // Base duration for scroll animations
-      smoothWheel: true,     // Smooth mouse wheel
-      smoothTouch: false,    // Keep native touch on mobile for best UX
-      wheelMultiplier: 0.9,  // Slightly reduce wheel speed for elegance
-      touchMultiplier: 1.5,  // Touch feels natural
-      infinite: false,
+      lerp: 0.08,
+      wheelMultiplier: 0.95,
+      touchMultiplier: 1.2,
+      syncTouch: false,
+    });
+    scrollState.lenis = lenis;
+
+    lenis.on("scroll", (e) => {
+      scrollState.velocity = e.velocity;
+      ScrollTrigger.update();
     });
 
-    lenisRef.current = lenis;
+    const tick = (time) => lenis.raf(time * 1000);
+    gsap.ticker.add(tick);
+    gsap.ticker.lagSmoothing(0);
 
-    // Connect Lenis to GSAP's ScrollTrigger so all GSAP animations
-    // respond to the Lenis-smoothed scroll position
-    lenis.on("scroll", ScrollTrigger.update);
+    // Hold scrolling until the preloader curtain has lifted.
+    if (!isReady()) lenis.stop();
+    const unsub = onReady(() => lenis.start());
 
-    // Use GSAP's ticker to drive Lenis (60fps+ sync)
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000);
-    });
-    gsap.ticker.lagSmoothing(0); // Disable lag smoothing for consistent frame rate
-
-    // Handle anchor link clicks for smooth navigation
-    const handleAnchorClick = (e) => {
-      const link = e.target.closest('a[href^="#"]');
-      if (link) {
-        const targetId = link.getAttribute("href");
-        if (targetId && targetId !== "#") {
-          const target = document.querySelector(targetId);
-          if (target) {
-            e.preventDefault();
-            lenis.scrollTo(target, { offset: 0, duration: 1.6 });
-          }
-        }
-      }
+    const onClick = (e) => {
+      const link = e.target.closest?.('a[href^="#"]');
+      const id = link?.getAttribute("href");
+      if (!id || id === "#") return;
+      const target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      lenis.scrollTo(target, { duration: 1.6 });
     };
-    document.addEventListener("click", handleAnchorClick);
+    document.addEventListener("click", onClick);
 
     return () => {
-      document.removeEventListener("click", handleAnchorClick);
-      gsap.ticker.remove(lenis.raf);
+      unsub();
+      document.removeEventListener("click", onClick);
+      gsap.ticker.remove(tick);
       lenis.destroy();
+      scrollState.lenis = null;
     };
   }, []);
 
