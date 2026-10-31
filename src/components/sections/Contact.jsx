@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Mail, MapPin, Phone, Send } from "lucide-react";
-import { gsap, useGSAP, useSkew, prefersReducedMotion } from "../../lib/motion";
+import { gsap, useGSAP, useSkew } from "../../lib/motion";
 import { portfolioData } from "../../data/portfolioData";
 import { Github, Linkedin } from "../Icons";
 import GlassCard from "../GlassCard";
@@ -18,16 +18,20 @@ export default function Contact() {
 
   useGSAP(
     () => {
-      if (prefersReducedMotion()) return;
-      // Gradient text can't be split per-character (background-clip breaks), so it reveals as one word.
-      gsap.from(".contact-word", {
-        yPercent: 50, opacity: 0, duration: 1, ease: "expo.out", delay: 0.2, clearProps: "transform,opacity",
-        scrollTrigger: { trigger: ".contact-word", start: "top 90%", once: true },
+      // Desktop only; phones use the CSS one-shot reveal (data-reveal).
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
+        // Gradient text can't be split per-character (background-clip breaks), so it reveals as one word.
+        gsap.from(".contact-word", {
+          yPercent: 50, opacity: 0, duration: 1, ease: "expo.out", delay: 0.2, clearProps: "transform,opacity",
+          scrollTrigger: { trigger: ".contact-word", start: "top 90%", once: true },
+        });
+        gsap.from(".contact-reveal", {
+          opacity: 0, y: 40, duration: 0.9, stagger: 0.12, ease: "expo.out", clearProps: "transform,opacity",
+          scrollTrigger: { trigger: ".contact-grid", start: "top 85%", once: true },
+        });
       });
-      gsap.from(".contact-reveal", {
-        opacity: 0, y: 40, duration: 0.9, stagger: 0.12, ease: "expo.out", clearProps: "transform,opacity",
-        scrollTrigger: { trigger: ".contact-grid", start: "top 85%", once: true },
-      });
+      return () => mm.revert();
     },
     { scope: root },
   );
@@ -77,13 +81,13 @@ export default function Contact() {
     <section id="contact" ref={root} className="section" aria-label="Contact">
       <div className="container-x">
         <p className="eyebrow chip mb-6">Contact</p>
-        <h2 ref={skew} className="display text-[clamp(3rem,10.5vw,9rem)]">
+        <h2 ref={skew} className="display text-[clamp(2.75rem,12vw,9rem)]">
           <RevealText as="span" type="chars" className="block">Let&apos;s build</RevealText>
-          <span className="contact-word text-gradient inline-block pb-[0.08em]">something.</span>
+          <span className="contact-word text-gradient inline-block pb-[0.08em]" data-reveal style={{ "--i": 1 }}>something.</span>
         </h2>
 
         <div className="contact-grid mt-14 grid gap-5 lg:mt-20 lg:grid-cols-[1.15fr_0.85fr]">
-          <GlassCard large flat className="contact-reveal p-6 md:p-10">
+          <GlassCard large flat data-reveal className="contact-reveal p-5 md:p-10">
             {status === "success" ? (
               <div className="grid min-h-[22rem] place-items-center text-center" role="status">
                 <div>
@@ -117,7 +121,7 @@ export default function Contact() {
             )}
           </GlassCard>
 
-          <GlassCard large flat className="contact-reveal flex flex-col justify-between gap-10 p-6 md:p-10">
+          <GlassCard large flat data-reveal style={{ "--i": 1 }} className="contact-reveal flex flex-col justify-between gap-10 p-5 md:p-10">
             <ul className="flex flex-col gap-6">
               {details.map(({ icon: Icon, label, value, href }) => (
                 <li key={label} className="flex items-center gap-4">

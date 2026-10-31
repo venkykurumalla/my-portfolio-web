@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Award, ArrowUpRight, ShieldCheck } from "lucide-react";
-import { gsap, useGSAP, prefersReducedMotion } from "../../lib/motion";
+import { gsap, useGSAP } from "../../lib/motion";
 import { portfolioData } from "../../data/portfolioData";
 import GlassCard from "../GlassCard";
 import Section from "../Section";
@@ -12,11 +12,14 @@ export default function Certifications() {
 
   useGSAP(
     () => {
-      if (prefersReducedMotion()) return;
-      gsap.from(".cert-card", {
-        opacity: 0, y: 50, duration: 1, stagger: 0.14, ease: "expo.out", clearProps: "transform,opacity",
-        scrollTrigger: { trigger: grid.current, start: "top 85%", once: true },
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
+        gsap.from(".cert-card", {
+          opacity: 0, y: 50, duration: 1, stagger: 0.14, ease: "expo.out", clearProps: "transform,opacity",
+          scrollTrigger: { trigger: grid.current, start: "top 85%", once: true },
+        });
       });
+      return () => mm.revert();
     },
     { scope: grid },
   );
@@ -28,7 +31,7 @@ export default function Certifications() {
           const Icon = icons[i % icons.length];
           const hasLink = c.link && c.link !== "#";
           return (
-            <GlassCard key={c.name} flat large className="cert-card flex flex-col p-7 md:p-9">
+            <GlassCard key={c.name} flat large data-reveal style={{ "--i": i }} className="cert-card flex flex-col p-6 md:p-9">
               <span className="mb-6 grid h-12 w-12 place-items-center rounded-2xl" style={{ background: "linear-gradient(135deg, var(--blue), var(--violet))" }}>
                 <Icon className="h-6 w-6 text-white" aria-hidden="true" />
               </span>

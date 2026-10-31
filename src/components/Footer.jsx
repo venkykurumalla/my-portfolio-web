@@ -2,7 +2,7 @@ import { portfolioData } from "../data/portfolioData";
 
 export default function Footer() {
   return (
-    <footer className="container-x pb-10 pt-4">
+    <footer className="container-x pb-24 pt-4 md:pb-10">
       <div className="glass glass--flat glass--pill flex flex-col items-center justify-between gap-3 px-7 py-5 text-center text-sm md:flex-row md:text-left">
         <p className="font-semibold">{portfolioData.personalInfo.name}</p>
         <p className="dim">Aspiring Software Engineer · Full-Stack · AI/LLM</p>

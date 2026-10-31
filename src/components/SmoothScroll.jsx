@@ -1,16 +1,16 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
-import { gsap, ScrollTrigger, prefersReducedMotion, scrollState } from "../lib/motion";
+import { gsap, ScrollTrigger, isTouch, prefersReducedMotion, scrollState } from "../lib/motion";
 
 /**
  * Lenis smooth scroll driven by GSAP's ticker (the only rAF loop) and synced with ScrollTrigger.
- * Touch devices keep native momentum scrolling (syncTouch off) — it feels
- * better on phones and avoids fighting the browser's URL-bar behaviour.
+ * Phones and tablets skip Lenis entirely and use native scrolling.
  */
 export default function SmoothScroll({ children }) {
   useEffect(() => {
     if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-    if (prefersReducedMotion()) return;
+    // Touch devices keep native scrolling (fast, natural swipes); Lenis is desktop-only.
+    if (prefersReducedMotion() || isTouch()) return;
 
     const lenis = new Lenis({
       lerp: 0.1,

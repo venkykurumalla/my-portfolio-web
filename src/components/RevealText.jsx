@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { gsap, SplitText, useGSAP, prefersReducedMotion } from "../lib/motion";
+import { gsap, SplitText, useGSAP } from "../lib/motion";
 
 /**
  * Splits text and reveals it rising into place (opacity + transform only).
@@ -21,29 +21,31 @@ export default function RevealText({
     () => {
       const el = ref.current;
       if (!el) return;
+      const mm = gsap.matchMedia();
 
-      if (prefersReducedMotion()) {
-        gsap.from(el, { opacity: 0, duration: 0.5, scrollTrigger: { trigger: el, start, once: true } });
-        return;
-      }
-
-      SplitText.create(el, {
-        type: type === "chars" ? "words,chars" : "words",
-        autoSplit: true,
-        onSplit(self) {
-          const targets = type === "chars" ? self.chars : self.words;
-          return gsap.from(targets, {
-            yPercent: 60, opacity: 0, duration: 0.9,
-            stagger: stagger ?? (type === "chars" ? 0.03 : 0.06),
-            ease: "expo.out", delay,
-            onComplete: () => gsap.set(targets, { clearProps: "willChange" }),
-            scrollTrigger: { trigger: el, start, once: true },
-          });
-        },
+      // Desktop: split-text reveal. Phones use the CSS one-shot reveal (data-reveal) instead.
+      mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
+        SplitText.create(el, {
+          type: type === "chars" ? "words,chars" : "words",
+          autoSplit: true,
+          onSplit(self) {
+            const targets = type === "chars" ? self.chars : self.words;
+            return gsap.from(targets, {
+              yPercent: 60, opacity: 0, duration: 0.9,
+              stagger: stagger ?? (type === "chars" ? 0.03 : 0.06),
+              ease: "expo.out", delay,
+              scrollTrigger: { trigger: el, start, once: true },
+            });
+          },
+        });
       });
+      mm.add("(prefers-reduced-motion: reduce)", () => {
+        gsap.from(el, { opacity: 0, duration: 0.5, scrollTrigger: { trigger: el, start, once: true } });
+      });
+      return () => mm.revert();
     },
     { scope: ref },
   );
 
-  return <Tag ref={ref} className={className} {...rest}>{children}</Tag>;
+  return <Tag ref={ref} data-reveal="blur" className={className} {...rest}>{children}</Tag>;
 }

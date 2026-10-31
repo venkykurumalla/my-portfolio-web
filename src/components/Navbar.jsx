@@ -5,8 +5,8 @@ import { scrollState, scrollToTarget } from "../lib/motion";
 import ThemeToggle from "./ThemeToggle";
 
 const menuVariants = {
-  hidden: { opacity: 0, transition: { duration: 0.3 } },
-  show: { opacity: 1, transition: { duration: 0.35, staggerChildren: 0.06, delayChildren: 0.1 } },
+  hidden: { opacity: 0, y: -24, transition: { duration: 0.3 } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35, staggerChildren: 0.06, delayChildren: 0.1 } },
 };
 const itemVariants = {
   hidden: { opacity: 0, y: 24 },
@@ -101,7 +101,7 @@ export default function Navbar() {
           <button
             ref={toggle}
             type="button"
-            className="chip relative grid h-9 w-9 cursor-pointer place-items-center border-0 !p-0 lg:hidden"
+            className="chip relative grid h-11 w-11 cursor-pointer place-items-center border-0 !p-0 lg:hidden"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             aria-controls="mobile-menu"

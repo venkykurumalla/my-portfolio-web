@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 import Hero from "./components/sections/Hero";
 import About from "./components/sections/About";
 import { ScrollTrigger } from "./lib/motion";
+import { initReveals } from "./lib/reveal";
 
 // Below-the-fold sections are code-split. Once their chunks land, ScrollTrigger re-measures.
 const loaders = [
@@ -21,6 +22,8 @@ const loaders = [
 const [Skills, Projects, Experience, Education, Certifications, Contact] = loaders.map((load) => lazy(load));
 
 export default function App() {
+  useEffect(() => initReveals(), []);
+
   useEffect(() => {
     const refresh = () => ScrollTrigger.refresh();
     Promise.all(loaders.map((load) => load()))

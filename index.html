@@ -23,6 +23,7 @@
     <!-- Apply saved theme before first paint (dark is the default) -->
     <style>html{background:#05060A}html[data-theme="light"]{background:#EDF0FA}</style>
     <script>
+      document.documentElement.classList.add("js");
       try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark"; }
       catch (e) { document.documentElement.dataset.theme = "dark"; }
     </script>

@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { gsap, useGSAP, prefersReducedMotion } from "../../lib/motion";
+import { gsap, useGSAP } from "../../lib/motion";
 import { portfolioData } from "../../data/portfolioData";
 import GlassCard from "../GlassCard";
 import Marquee from "../Marquee";
@@ -37,35 +37,39 @@ export default function Skills() {
 
   useGSAP(
     () => {
-      if (prefersReducedMotion()) return;
-      gsap.from(".skill-card", {
-        opacity: 0, y: 40, duration: 0.9, stagger: 0.08, ease: "expo.out", clearProps: "transform,opacity",
-        scrollTrigger: { trigger: grid.current, start: "top 85%", once: true },
+      // Desktop only; phones use the CSS one-shot reveal (data-reveal on each card).
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
+        gsap.from(".skill-card", {
+          opacity: 0, y: 40, duration: 0.9, stagger: 0.08, ease: "expo.out", clearProps: "transform,opacity",
+          scrollTrigger: { trigger: grid.current, start: "top 85%", once: true },
+        });
+        gsap.from(".skill-chip", {
+          opacity: 0, y: 14, scale: 0.9, duration: 0.6, stagger: 0.03, delay: 0.2, ease: "back.out(1.6)", clearProps: "transform,opacity",
+          scrollTrigger: { trigger: grid.current, start: "top 85%", once: true },
+        });
       });
-      gsap.from(".skill-chip", {
-        opacity: 0, y: 14, scale: 0.9, duration: 0.6, stagger: 0.03, delay: 0.2, ease: "back.out(1.6)", clearProps: "transform,opacity",
-        scrollTrigger: { trigger: grid.current, start: "top 85%", once: true },
-      });
+      return () => mm.revert();
     },
     { scope: grid },
   );
 
   return (
     <Section id="skills" eyebrow="Skills" title="Tools I think in." reveal={false}>
-      <div ref={grid} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {portfolioData.skills.map((c) => (
-          <GlassCard key={c.category} flat className="skill-card p-6">
+      <div ref={grid} className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 md:gap-4 lg:grid-cols-4">
+        {portfolioData.skills.map((c, ci) => (
+          <GlassCard key={c.category} flat data-reveal style={{ "--i": ci % 2 }} className="skill-card p-4 md:p-6">
             <h3 className="eyebrow mb-4">{c.category}</h3>
             <ul className="flex flex-wrap gap-2">
-              {c.items.map((item) => (
-                <li key={item} className="skill-chip chip">{item}</li>
+              {c.items.map((item, ji) => (
+                <li key={item} className="skill-chip chip" style={{ "--j": ji }}>{item}</li>
               ))}
             </ul>
           </GlassCard>
         ))}
       </div>
 
-      <div className="mt-14 flex flex-col gap-4 md:mt-20" style={{ marginInline: "calc(50% - 50vw)" }}>
+      <div className="mt-10 flex flex-col gap-3 md:mt-20 md:gap-4" style={{ marginInline: "calc(50% - 50vw)" }}>
         <Marquee direction={1} speed={55}>{rows[0].map((n) => <Pill key={n} name={n} />)}</Marquee>
         <Marquee direction={-1} speed={48}>{rows[1].map((n) => <Pill key={n} name={n} />)}</Marquee>
       </div>

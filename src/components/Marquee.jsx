@@ -14,6 +14,8 @@ export default function Marquee({ children, direction = 1, speed = 55 }) {
       const setX = gsap.quickSetter(track.current, "x", "px");
       let width = group.current.offsetWidth;
       let x = direction > 0 ? 0 : -width;
+      const phone = window.matchMedia("(max-width: 767px)").matches;
+      const base = phone ? speed * 0.6 : speed;
       let boost = 1;
       let visible = false;
 
@@ -31,9 +33,9 @@ export default function Marquee({ children, direction = 1, speed = 55 }) {
 
       const tick = (_t, delta) => {
         if (!visible) return;
-        const targetBoost = 1 + Math.min(Math.abs(scrollState.velocity) * 0.4, 9);
+        const targetBoost = phone ? 1 : 1 + Math.min(Math.abs(scrollState.velocity) * 0.4, 9);
         boost += (targetBoost - boost) * 0.08;
-        x -= direction * speed * (delta / 1000) * boost;
+        x -= direction * base * (delta / 1000) * boost;
         if (direction > 0 && x <= -width) x += width;
         if (direction < 0 && x >= 0) x -= width;
         setX(x);

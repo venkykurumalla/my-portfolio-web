@@ -8,6 +8,7 @@
 
 /* ── BASE ──────────────────────────────────────────────────────────────── */
 html {
+  overflow-x: clip;
   background: var(--bg);
   color: var(--fg);
   color-scheme: dark;
@@ -21,6 +22,9 @@ html.menu-open { overflow: hidden; }
 
 body {
   min-height: 100svh;
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 100%;
   font-family: var(--font-sans);
   overflow-x: clip;
 }
@@ -46,12 +50,17 @@ a, button, [role="button"], summary, label[for], select { cursor: pointer; }
 
 .section {
   position: relative;
-  padding-block: clamp(5rem, 13vh, 9rem);
+  padding-block: clamp(4.5rem, 13vh, 9rem);
+}
+/* Phones: ~72px between sections; scroll-margin keeps headings clear of the floating nav on anchor jumps */
+@media (max-width: 767px) {
+  .section { padding-block: 2.5rem 2rem; }
+  main section[id] { scroll-margin-top: 44px; }
 }
 
 /* ── AURORA + GRAIN ────────────────────────────────────────────────────── */
 .aurora {
-  position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
+  position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; contain: paint;
   opacity: var(--aurora-opacity);
   transition: opacity 0.6s ease;
 }
@@ -113,7 +122,7 @@ a, button, [role="button"], summary, label[for], select { cursor: pointer; }
     var(--glass-fill-strong);
 }
 .glass--hover { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
-.glass--hover:hover { transform: translateY(-4px); }
+@media (hover: hover) { .glass--hover:hover { transform: translateY(-4px); } }
 .glass--lg { border-radius: var(--r-card-lg); }
 .glass--pill { border-radius: var(--r-pill); }
 .glass--tint { background:
@@ -151,14 +160,14 @@ a, button, [role="button"], summary, label[for], select { cursor: pointer; }
 /* ── BUTTONS ───────────────────────────────────────────────────────────── */
 .btn {
   position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 0.7rem;
-  padding: 0.95rem 1.6rem; border-radius: var(--r-pill);
+  min-height: 44px; padding: 0.95rem 1.6rem; border-radius: var(--r-pill);
   font-size: 0.95rem; font-weight: 600; letter-spacing: -0.01em; cursor: pointer;
   border: 0; text-decoration: none; color: var(--fg);
   cursor: pointer;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.btn:hover { transform: translateY(-2px) scale(1.02); }
-.btn:active { transform: scale(0.98); }
+@media (hover: hover) { .btn:hover { transform: translateY(-2px) scale(1.02); } }
+.btn:active { transform: scale(0.97); }
 .btn:disabled { opacity: 0.6; cursor: default; transform: none; }
 .btn-primary {
   color: #fff;
@@ -170,7 +179,7 @@ a, button, [role="button"], summary, label[for], select { cursor: pointer; }
   content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
   box-shadow: 0 16px 44px -6px rgba(139,92,246,0.85); opacity: 0; transition: opacity 0.3s ease;
 }
-.btn-primary:hover::after { opacity: 1; }
+@media (hover: hover) { .btn-primary:hover::after { opacity: 1; } }
 .btn-glass {
   background: linear-gradient(180deg, var(--glass-specular), transparent), var(--glass-fill-strong);
   box-shadow: inset 0 1px 0 var(--glass-border-hi), inset 0 0 0 1px var(--glass-border-lo);
@@ -270,11 +279,38 @@ html:not([data-theme="light"]) .logo-mono { filter: invert(1); }
 }
 
 /* Reduced motion on wide screens: no pinning, so projects stack vertically instead of scrolling sideways */
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) and (min-width: 1024px) {
   .projects-pin { height: auto !important; overflow: visible !important; padding-block: 6rem !important; }
   .projects-track { flex-direction: column !important; align-items: stretch !important; padding-inline: max(1.25rem, 4vw) !important; }
   .projects-track .project-card { width: 100% !important; height: auto !important; flex-direction: column !important; }
   .projects-track .project-card > div { width: 100% !important; }
   .projects-track .project-card .card-img { min-height: 240px !important; flex: none !important; }
+}
+
+/* ── ONE-SHOT REVEALS (phones) ─────────────────────────────────────────────
+   Hidden only when JS is running (html.js), on small screens, with motion allowed.
+   Transition to the visible state when .is-in is added; a CSS failsafe shows everything
+   after 5s even if the observer never runs. Desktop uses GSAP instead. */
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .js [data-reveal]:not(.is-in) {
+    opacity: 0; transform: translate3d(0, 24px, 0);
+    animation: reveal-failsafe 0.01s 5s forwards;
+  }
+  .js [data-reveal="blur"]:not(.is-in) { filter: blur(6px); }
+  .js [data-reveal] {
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.7s ease;
+    transition-delay: calc(var(--i, 0) * 80ms);
+  }
+  .js [data-reveal].is-in .skill-chip { animation: chip-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 80ms + var(--j, 0) * 55ms + 150ms); }
+}
+@keyframes reveal-failsafe { to { opacity: 1; transform: none; filter: none; } }
+@keyframes chip-in { from { opacity: 0; transform: translate3d(0, 12px, 0) scale(0.92); } to { opacity: 1; transform: none; } }
+
+/* ── PROJECT CAROUSEL (below 1024px) ───────────────────────────────────── */
+@media (max-width: 1023px) {
+  .project-track { scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .project-track::-webkit-scrollbar { display: none; }
+  .project-track .project-card { scroll-snap-align: center; transform: scale(0.95); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+  .project-track .project-card.is-active { transform: none; }
 }
 }

@@ -27,7 +27,7 @@ export function scrollToTarget(target, options = {}) {
     return;
   }
   const el = typeof target === "string" ? document.querySelector(target) : target;
-  el?.scrollIntoView({ behavior: "auto" });
+  el?.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth" });
 }
 
 // Velocity-based skew: tilts a large element while the page scrolls fast.
