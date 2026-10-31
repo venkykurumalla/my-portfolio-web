@@ -123,7 +123,7 @@ export default function Projects() {
           </div>
         </div>
 
-        <div ref={track} className="flex flex-col gap-6 px-[max(1.25rem,4vw)] lg:flex-row lg:items-center lg:gap-8 lg:pl-[max(2rem,calc((100vw-1240px)/2))] lg:pr-16" style={{ willChange: "auto" }}>
+        <div ref={track} className="projects-track flex flex-col gap-6 px-[max(1.25rem,4vw)] lg:flex-row lg:items-center lg:gap-8 lg:pl-[max(2rem,calc((100vw-1240px)/2))] lg:pr-16" style={{ willChange: "auto" }}>
           {projects.map((p, i) => (
             <ProjectCard key={p.id} project={p} index={i} featured={p.id === "ap-forest"} />
           ))}

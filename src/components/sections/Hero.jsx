@@ -32,7 +32,7 @@ export default function Hero() {
       const startCycle = () => cycle.restart(true);
 
       if (reduced) {
-        gsap.from(".hero-in", { opacity: 0, duration: 0.8, stagger: 0.1 });
+        gsap.from(".hero-copy, .hero-card-wrap", { opacity: 0, duration: 0.8, stagger: 0.1 });
         startCycle();
         return;
       }
@@ -64,7 +64,7 @@ export default function Hero() {
     <section id="home" ref={root} className="relative flex min-h-[100svh] items-center pb-20 pt-32" aria-label="Introduction">
       <div className="container-x grid items-center gap-14 lg:grid-cols-[1.3fr_0.7fr]">
         <div className="hero-copy">
-          <p className="hero-badge chip mb-7">
+          <p className="hero-badge chip mb-7 max-w-full !flex-wrap !whitespace-normal !rounded-3xl">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-70" style={{ background: "var(--cyan)" }} />
               <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: "var(--cyan)" }} />

@@ -125,7 +125,7 @@ export default function Contact() {
                     <Icon className="h-5 w-5" style={{ color: "var(--cyan)" }} aria-hidden="true" />
                   </span>
                   <div className="min-w-0">
-                    <p className="eyebrow !text-[0.65rem]">{label}</p>
+                    <p className="eyebrow !flex !text-[0.65rem]">{label}</p>
                     {href ? <a href={href} className="break-words font-medium hover:underline">{value}</a> : <p className="font-medium">{value}</p>}
                   </div>
                 </li>

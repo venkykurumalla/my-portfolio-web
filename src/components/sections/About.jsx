@@ -58,7 +58,7 @@ export default function About() {
 
   return (
     <section id="about" ref={root} aria-label="About">
-      <div className="about-pin flex min-h-[100svh] flex-col justify-center py-24 md:py-16">
+      <div className="about-pin flex flex-col justify-center py-24 md:min-h-[100svh] md:py-16">
         <div className="container-x">
           <SectionHeader eyebrow="About" title="Building for the web, powered by AI." className="!mb-8 md:!mb-10" />
 
