@@ -1,148 +1,142 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
-import { Github, Linkedin } from "../Icons";
+import { useRef, useState } from "react";
+import { Mail, MapPin, Phone, Send } from "lucide-react";
+import { gsap, useGSAP, useSkew, prefersReducedMotion } from "../../lib/motion";
 import { portfolioData } from "../../data/portfolioData";
+import { Github, Linkedin } from "../Icons";
+import GlassCard from "../GlassCard";
+import Button from "../Button";
+import RevealText from "../RevealText";
+
+const { personalInfo } = portfolioData;
+const encode = (data) => new URLSearchParams(data).toString();
 
 export default function Contact() {
-  const actions = [
-    {
-      href: `mailto:${portfolioData.personalInfo.email}`,
-      icon: <Mail className="w-5 h-5" />,
-      label: "Email Me"
+  const root = useRef(null);
+  const check = useRef(null);
+  const skew = useSkew(6);
+  const [status, setStatus] = useState("idle"); // idle | sending | success | error
+
+  useGSAP(
+    () => {
+      if (prefersReducedMotion()) return;
+      // Gradient text can't be split per-character (background-clip breaks), so it reveals as one word.
+      gsap.from(".contact-word", {
+        yPercent: 50, opacity: 0, duration: 1, ease: "expo.out", delay: 0.2, clearProps: "transform,opacity",
+        scrollTrigger: { trigger: ".contact-word", start: "top 90%", once: true },
+      });
+      gsap.from(".contact-reveal", {
+        opacity: 0, y: 40, duration: 0.9, stagger: 0.12, ease: "expo.out", clearProps: "transform,opacity",
+        scrollTrigger: { trigger: ".contact-grid", start: "top 85%", once: true },
+      });
     },
-    {
-      href: `tel:${portfolioData.personalInfo.phone.replace(/\s+/g, '')}`,
-      icon: <Phone className="w-5 h-5" />,
-      label: "Call Me"
+    { scope: root },
+  );
+
+  // Success: draw the check mark.
+  useGSAP(
+    () => {
+      if (status !== "success" || !check.current) return;
+      const path = check.current.querySelector("path");
+      const len = path.getTotalLength();
+      gsap.set(path, { strokeDasharray: len, strokeDashoffset: len });
+      gsap.timeline()
+        .from(".success-ring", { scale: 0, duration: 0.6, ease: "back.out(2)" })
+        .to(path, { strokeDashoffset: 0, duration: 0.6, ease: "power2.out" }, "-=0.1")
+        .from(".success-copy", { opacity: 0, y: 16, duration: 0.6, stagger: 0.1, ease: "expo.out" }, "-=0.2");
     },
-    {
-      href: portfolioData.personalInfo.socials.linkedin,
-      icon: <Linkedin className="w-5 h-5" />,
-      label: "LinkedIn Profile",
-      external: true
-    },
-    {
-      href: portfolioData.personalInfo.socials.github,
-      icon: <Github className="w-5 h-5" />,
-      label: "GitHub Profile",
-      external: true
+    { dependencies: [status], scope: root },
+  );
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = Object.fromEntries(new FormData(form));
+    setStatus("sending");
+    try {
+      // Netlify Forms (declared as a static form in index.html so Netlify detects it)
+      const res = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: encode({ "form-name": "contact", ...data }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      setStatus("success");
+      form.reset();
+    } catch {
+      setStatus("error");
     }
+  };
+
+  const details = [
+    { icon: Mail, label: "Email", value: personalInfo.email, href: `mailto:${personalInfo.email}` },
+    { icon: Phone, label: "Phone", value: personalInfo.phone, href: `tel:${personalInfo.phone.replace(/\s+/g, "")}` },
+    { icon: MapPin, label: "Location", value: personalInfo.location },
   ];
 
   return (
-    <section
-      id="contact-inner"
-      className="relative min-h-screen flex items-center bg-[#09090b] py-24"
-    >
-      {/* Background — large warm glow for the ending scene */}
-      <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center opacity-30">
-        <div className="w-[600px] h-[600px] bg-accent/15 rounded-full blur-[150px]" />
-      </div>
+    <section id="contact" ref={root} className="section" aria-label="Contact">
+      <div className="container-x">
+        <p className="eyebrow chip mb-6">Contact</p>
+        <h2 ref={skew} className="display text-[clamp(3rem,10.5vw,9rem)]">
+          <RevealText as="span" type="chars" className="block">Let&apos;s build</RevealText>
+          <span className="contact-word text-gradient inline-block pb-[0.08em]">something.</span>
+        </h2>
 
-      <div className="max-w-4xl mx-auto px-6 md:px-12 relative z-10 w-full">
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
-          className="mb-16 text-center"
-        >
-          <span className="text-xs font-bold uppercase tracking-widest text-accent mb-2 block">
-            Contact
-          </span>
-          <h2 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-lg">
-            Let's Build Together.
-          </h2>
-          <div className="h-[2px] w-12 bg-accent mt-6 mx-auto" />
-        </motion.div>
-
-        {/* Contact Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-stretch">
-          {/* Contact Details Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="p-8 bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/80 rounded flex flex-col justify-between shadow-2xl hover:border-zinc-700/80 transition-colors duration-500"
-          >
-            <div className="space-y-6">
-              <h3 className="font-display text-xl font-bold text-white mb-4">
-                Connect Directly
-              </h3>
-
-              {[
-                {
-                  icon: <Mail className="w-5 h-5" />,
-                  label: "Email",
-                  href: `mailto:${portfolioData.personalInfo.email}`,
-                  value: portfolioData.personalInfo.email
-                },
-                {
-                  icon: <Phone className="w-5 h-5" />,
-                  label: "Phone",
-                  href: `tel:${portfolioData.personalInfo.phone.replace(/\s+/g, '')}`,
-                  value: portfolioData.personalInfo.phone
-                },
-                {
-                  icon: <MapPin className="w-5 h-5" />,
-                  label: "Location",
-                  value: portfolioData.personalInfo.location
-                }
-              ].map((item, idx) => (
-                <div key={idx} className="flex items-center space-x-4 text-zinc-300 group">
-                  <div className="p-3 bg-zinc-900 border border-zinc-800 rounded text-accent group-hover:scale-110 group-hover:bg-accent group-hover:text-zinc-950 transition-all duration-300">
-                    {item.icon}
-                  </div>
-                  <div>
-                    <p className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">{item.label}</p>
-                    {item.href ? (
-                      <a href={item.href} className="text-sm font-semibold hover:text-accent transition-colors">
-                        {item.value}
-                      </a>
-                    ) : (
-                      <p className="text-sm font-semibold">{item.value}</p>
-                    )}
-                  </div>
+        <div className="contact-grid mt-14 grid gap-5 lg:mt-20 lg:grid-cols-[1.15fr_0.85fr]">
+          <GlassCard large flat className="contact-reveal p-6 md:p-10">
+            {status === "success" ? (
+              <div className="grid min-h-[22rem] place-items-center text-center" role="status">
+                <div>
+                  <svg ref={check} viewBox="0 0 96 96" className="mx-auto mb-6 h-24 w-24" aria-hidden="true">
+                    <circle className="success-ring" cx="48" cy="48" r="44" fill="rgba(34,211,238,0.12)" stroke="var(--cyan)" strokeWidth="2" />
+                    <path d="M28 50 L42 64 L68 34" fill="none" stroke="var(--cyan)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <h3 className="success-copy display text-3xl">Message sent.</h3>
+                  <p className="success-copy mt-2 muted">Thanks for reaching out — I&apos;ll reply soon.</p>
+                  <button type="button" className="success-copy btn btn-glass mt-8" onClick={() => setStatus("idle")}>Send another</button>
                 </div>
+              </div>
+            ) : (
+              <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" onSubmit={onSubmit} className="flex flex-col gap-4">
+                <input type="hidden" name="form-name" value="contact" />
+                <p className="hidden"><label>Don&apos;t fill this out: <input name="bot-field" tabIndex={-1} autoComplete="off" /></label></p>
+                <div className="field"><input id="c-name" name="name" type="text" placeholder=" " required autoComplete="name" /><label htmlFor="c-name">Your name</label></div>
+                <div className="field"><input id="c-email" name="email" type="email" placeholder=" " required autoComplete="email" /><label htmlFor="c-email">Email address</label></div>
+                <div className="field"><textarea id="c-message" name="message" rows={5} placeholder=" " required /><label htmlFor="c-message">Tell me about your project</label></div>
+                <div className="mt-2 flex flex-wrap items-center gap-4">
+                  <Button as="button" type="submit" variant="primary" disabled={status === "sending"}>
+                    {status === "sending" ? "Sending…" : "Send message"} <Send className="h-4 w-4" aria-hidden="true" />
+                  </Button>
+                  {status === "error" && (
+                    <p role="alert" className="text-sm" style={{ color: "var(--pink)" }}>
+                      Couldn&apos;t send — please email me at <a href={`mailto:${personalInfo.email}`} className="underline">{personalInfo.email}</a>.
+                    </p>
+                  )}
+                </div>
+              </form>
+            )}
+          </GlassCard>
+
+          <GlassCard large flat className="contact-reveal flex flex-col justify-between gap-10 p-6 md:p-10">
+            <ul className="flex flex-col gap-6">
+              {details.map(({ icon: Icon, label, value, href }) => (
+                <li key={label} className="flex items-center gap-4">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl" style={{ background: "var(--glass-fill-strong)", boxShadow: "inset 0 1px 0 var(--glass-border-hi)" }}>
+                    <Icon className="h-5 w-5" style={{ color: "var(--cyan)" }} aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="eyebrow !flex !text-[0.65rem]">{label}</p>
+                    {href ? <a href={href} className="break-words font-medium hover:underline">{value}</a> : <p className="font-medium">{value}</p>}
+                  </div>
+                </li>
               ))}
+            </ul>
+            <div className="flex gap-3">
+              <Button variant="icon" href={personalInfo.socials.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub profile"><Github className="h-5 w-5" /></Button>
+              <Button variant="icon" href={personalInfo.socials.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile"><Linkedin className="h-5 w-5" /></Button>
+              <Button variant="icon" href={`mailto:${personalInfo.email}`} aria-label="Send an email"><Mail className="h-5 w-5" /></Button>
             </div>
-
-            <div className="text-[10px] text-zinc-600 font-semibold uppercase tracking-wider mt-10 border-t border-zinc-850 pt-4">
-              Available for full-time roles and freelance opportunities.
-            </div>
-          </motion.div>
-
-          {/* Action Buttons Panel */}
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="flex flex-col justify-center gap-4"
-          >
-            {actions.map((action, idx) => (
-              <motion.a
-                key={idx}
-                whileHover={{ scale: 1.02, x: 6 }}
-                whileTap={{ scale: 0.98 }}
-                href={action.href}
-                target={action.external ? "_blank" : "_self"}
-                rel={action.external ? "noopener noreferrer" : ""}
-                className="flex items-center justify-between p-5 bg-zinc-900/40 backdrop-blur-sm border border-zinc-800 hover:border-accent/40 rounded text-zinc-200 hover:text-white transition-all duration-300 group shadow-lg"
-              >
-                <div className="flex items-center space-x-4">
-                  <div className="p-2 bg-zinc-900 border border-zinc-850 text-accent rounded group-hover:bg-accent group-hover:text-zinc-950 transition-colors duration-300">
-                    {action.icon}
-                  </div>
-                  <span className="text-sm font-bold uppercase tracking-wider">{action.label}</span>
-                </div>
-                <ArrowRight className="w-4 h-4 text-zinc-500 group-hover:text-accent group-hover:translate-x-1 transition-all duration-300" />
-              </motion.a>
-            ))}
-          </motion.div>
+          </GlassCard>
         </div>
       </div>
     </section>

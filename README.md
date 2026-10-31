@@ -1,16 +1,18 @@
-# React + Vite
+# Venkatesh Kurumalla — Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React 19 + Vite 8 + Tailwind 4, with an iOS "Liquid Glass" design language.
+Motion: Lenis (smooth scroll) + GSAP/ScrollTrigger/SplitText + Framer Motion (nav micro-interactions).
 
-Currently, two official plugins are available:
+```bash
+npm install
+npm run dev       # local dev
+npm run build     # production build -> dist/
+npm run preview   # serve the production build
+```
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+- Design tokens live in `src/design/tokens.js` (colors, radii, blur, shadows, light/dark themes).
+- Reusable pieces: `GlassCard`, `MagneticButton`, `RevealText`, `Section` in `src/components/`.
+- Content lives in `src/data/portfolioData.js`.
+- Add your portrait as `public/VenkateshKurumalla.jpg` (a "VK" monogram shows until it exists).
+- Resume: `public/resume.pdf`.
+- Deploy: Netlify (`netlify.toml` sets build command, `dist` publish dir and the SPA redirect). The contact form uses Netlify Forms.

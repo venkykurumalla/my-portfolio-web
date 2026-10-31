@@ -8,6 +8,24 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#05060A" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://venkykurumallainf0.netlify.app/" />
+
+    <!-- Fonts: Inter, non-blocking -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" /></noscript>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
+    <!-- Apply saved theme before first paint (dark is the default) -->
+    <style>html{background:#05060A}html[data-theme="light"]{background:#EDF0FA}</style>
+    <script>
+      try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark"; }
+      catch (e) { document.documentElement.dataset.theme = "dark"; }
+    </script>
     
     <!-- Primary SEO Metadata -->
     <title>Venkatesh Kurumalla | Software Developer | AI &amp; Full-Stack</title>
@@ -20,14 +38,36 @@
     <meta property="og:title" content="Venkatesh Kurumalla | Software Developer | AI &amp; Full-Stack" />
     <meta property="og:description" content="Explore projects, internships, and certifications of Venkatesh Kurumalla, ECE student focusing on AI, LLMs, and Web Development." />
     <meta property="og:image" content="/VenkateshKurumalla.jpg" /> <!-- Placeholder if shared -->
+    <meta property="og:url" content="https://venkykurumallainf0.netlify.app/" />
     <meta property="og:site_name" content="Venkatesh Kurumalla Portfolio" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:title" content="Venkatesh Kurumalla | Software Developer | AI &amp; Full-Stack" />
     <meta property="twitter:description" content="Explore projects, internships, and certifications of Venkatesh Kurumalla, ECE student focusing on AI, LLMs, and Web Development." />
+
+    <!-- JSON-LD Person schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Venkatesh Kurumalla",
+      "jobTitle": "Aspiring Software Engineer | Full-Stack & AI/LLM",
+      "url": "https://venkykurumallainf0.netlify.app/",
+      "email": "mailto:venkykurumalla7@gmail.com",
+      "telephone": "+91 8074455377",
+      "address": { "@type": "PostalAddress", "addressLocality": "Jaggampeta", "addressRegion": "Andhra Pradesh", "addressCountry": "IN" },
+      "alumniOf": { "@type": "CollegeOrUniversity", "name": "Godavari Institute of Engineering & Technology" },
+      "knowsAbout": ["Java", "JavaScript", "React.js", "Node.js", "MongoDB", "Large Language Models", "Full-Stack Development"],
+      "sameAs": ["https://github.com/venkykurumalla", "https://linkedin.com/in/venkykurumalla"]
+    }
+    </script>
   </head>
-  <body class="bg-[#09090b]">
+  <body>
+    <!-- Static form so Netlify Forms detects the React contact form -->
+    <form name="contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input name="name" /><input name="email" /><textarea name="message"></textarea><input name="bot-field" />
+    </form>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

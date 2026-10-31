@@ -1,111 +1,122 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { ArrowRight, Download, Mail } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowRight, Download, MapPin } from "lucide-react";
+import { gsap, useGSAP, useSkew, prefersReducedMotion } from "../../lib/motion";
 import { portfolioData } from "../../data/portfolioData";
+import GlassCard from "../GlassCard";
+import Button from "../Button";
+
+const { personalInfo, hero } = portfolioData;
+const [firstName, lastName] = personalInfo.name.split(" ");
 
 export default function Hero() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.15, delayChildren: 0.3 }
-    }
-  };
+  const root = useRef(null);
+  const role = useRef(null);
+  const skew = useSkew(4);
+  const [photoFailed, setPhotoFailed] = useState(false);
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30, scale: 0.96 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] }
-    }
-  };
+  useGSAP(
+    () => {
+      const reduced = prefersReducedMotion();
+
+      // Role cycling — works with or without motion.
+      let i = 0;
+      const el = role.current;
+      const cycle = gsap.delayedCall(2.4, function swap() {
+        if (reduced) { i = (i + 1) % hero.roles.length; el.textContent = hero.roles[i]; cycle.restart(true); return; }
+        gsap.timeline({ onComplete: () => cycle.restart(true) })
+          .to(el, { yPercent: -80, opacity: 0, duration: 0.35, ease: "power3.in" })
+          .add(() => { i = (i + 1) % hero.roles.length; el.textContent = hero.roles[i]; })
+          .fromTo(el, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.5, ease: "expo.out" });
+      });
+      cycle.pause();
+      const startCycle = () => cycle.restart(true);
+
+      if (reduced) { startCycle(); return; }
+
+      // Hero is visible immediately; content just fades up quickly (0.5s).
+      gsap.from(".hero-copy > *, .hero-card-wrap", { opacity: 0, y: 16, duration: 0.5, stagger: 0.05, ease: "power2.out", clearProps: "transform,opacity" });
+      startCycle();
+
+      // Scroll parallax (desktop only): copy drifts up and fades, photo frame drifts at its own pace.
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 1024px) and (hover: hover)", () => {
+        const trigger = { trigger: root.current, start: "top top", end: "bottom top", scrub: true };
+        gsap.to(".hero-copy", { yPercent: -14, opacity: 0.1, ease: "none", scrollTrigger: trigger });
+        gsap.to(".hero-card-wrap", { yPercent: -22, ease: "none", scrollTrigger: trigger });
+      });
+
+      return () => { mm.revert(); cycle.kill(); };
+    },
+    { scope: root },
+  );
 
   return (
-    <section
-      id="home-inner"
-      className="relative min-h-screen flex items-center justify-center pt-24 pb-16 bg-[#09090b]"
-    >
-      {/* Background layer — parallax handled by CinematicSection's GSAP */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f23_1px,transparent_1px),linear-gradient(to_bottom,#1f1f23_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-[0.25]" />
-        <motion.div
-          animate={{ scale: [1, 1.05, 1], opacity: [0.5, 0.8, 0.5] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] md:w-[600px] h-[300px] md:h-[500px] bg-accent/10 rounded-full blur-[100px] pointer-events-none"
-        />
+    <section id="home" ref={root} className="relative flex min-h-[100svh] items-center pb-20 pt-32" aria-label="Introduction">
+      <div className="container-x grid items-center gap-14 lg:grid-cols-[1.3fr_0.7fr]">
+        <div className="hero-copy">
+          <p className="hero-badge chip mb-7 max-w-full !flex-wrap !whitespace-normal !rounded-3xl">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-70" style={{ background: "var(--cyan)" }} />
+              <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: "var(--cyan)" }} />
+            </span>
+            Open to internships · <MapPin className="h-3.5 w-3.5" aria-hidden="true" /> {personalInfo.location}
+          </p>
+
+          <h1 ref={skew} className="display text-[clamp(3rem,11vw,8rem)]">
+            <span className="hero-first block">{firstName}</span>
+            <span className="hero-last text-gradient inline-block pb-[0.08em]">{lastName}</span>
+          </h1>
+
+          <h2 className="hero-sub mt-6 max-w-2xl text-[clamp(1.05rem,2.2vw,1.45rem)] font-medium leading-snug muted">
+            Aspiring Software Engineer <span className="dim">|</span> Full-Stack &amp; AI/LLM
+          </h2>
+          <p className="hero-sub mt-4 flex items-center gap-3 text-[clamp(1rem,2vw,1.25rem)] font-semibold" aria-label={hero.roles.join(", ")}>
+            <span className="dim font-normal">I build as a</span>
+            <span className="inline-block overflow-hidden pb-1">
+              <span ref={role} className="inline-block text-gradient" aria-hidden="true">{hero.roles[0]}</span>
+            </span>
+          </p>
+
+          <div className="mt-10 flex flex-wrap gap-3.5">
+            <Button href="#projects" variant="primary">
+              View Projects <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Button>
+            <Button href={personalInfo.resume} download="Venkatesh_Kurumalla_Resume.pdf" variant="glass">
+              Download Resume <Download className="h-4 w-4" aria-hidden="true" />
+            </Button>
+          </div>
+        </div>
+
+        <div className="hero-card-wrap relative mx-auto w-full max-w-[22rem] lg:max-w-none">
+          <GlassCard large className="hero-card float-slow aspect-[4/5] overflow-hidden p-3">
+            <div className="relative h-full w-full overflow-hidden rounded-[22px]" style={{ background: "linear-gradient(160deg, rgba(59,130,246,0.35), rgba(139,92,246,0.35) 55%, rgba(244,114,182,0.3))" }}>
+              {!photoFailed && (
+                <picture>
+                  <img
+                    src="/VenkateshKurumalla.jpg"
+                    alt="Portrait of Venkatesh Kurumalla"
+                    width="640" height="800" decoding="async" fetchPriority="high"
+                    className="absolute inset-0 h-full w-full object-cover"
+                    onError={() => setPhotoFailed(true)}
+                  />
+                </picture>
+              )}
+              {photoFailed && (
+                <div className="absolute inset-0 grid place-items-center" role="img" aria-label="Venkatesh Kurumalla monogram">
+                  <span className="display text-[clamp(6rem,16vw,10rem)] text-white/90" style={{ textShadow: "0 8px 40px rgba(0,0,0,0.35)" }}>VK</span>
+                </div>
+              )}
+            </div>
+          </GlassCard>
+
+          <span className="hero-orbit chip float-slower absolute -left-3 top-[14%] hidden sm:inline-flex">React.js</span>
+          <span className="hero-orbit chip float-slow absolute -right-3 top-[44%] hidden sm:inline-flex">Node.js</span>
+          <span className="hero-orbit chip float-slower absolute -left-5 bottom-[12%] hidden sm:inline-flex">LLMs</span>
+        </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 md:px-12 text-center relative z-10">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="flex flex-col items-center"
-        >
-          {/* Badge */}
-          <motion.div
-            variants={itemVariants}
-            className="inline-flex items-center space-x-2 px-3 py-1.5 border border-zinc-800 bg-zinc-900/60 backdrop-blur-md rounded-full text-xs font-semibold tracking-wider text-accent uppercase mb-6"
-          >
-            <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
-            <span>AI & Full-Stack Development</span>
-          </motion.div>
-
-          {/* Name */}
-          <motion.h1
-            variants={itemVariants}
-            className="font-display text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white leading-tight mb-4 drop-shadow-2xl"
-          >
-            {portfolioData.personalInfo.name}
-          </motion.h1>
-
-          {/* Headline */}
-          <motion.h2
-            variants={itemVariants}
-            className="text-lg sm:text-xl md:text-2xl font-semibold text-zinc-300 tracking-normal max-w-2xl mb-6"
-          >
-            {portfolioData.hero.supportingHeadline}
-          </motion.h2>
-
-          {/* Objective */}
-          <motion.p
-            variants={itemVariants}
-            className="text-sm sm:text-base text-zinc-400 font-medium leading-relaxed max-w-2xl mb-10"
-          >
-            {portfolioData.hero.objective}
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div
-            variants={itemVariants}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full sm:w-auto"
-          >
-            <a
-              href="#projects"
-              className="group flex items-center justify-center w-full sm:w-auto bg-accent hover:bg-accent/90 text-zinc-950 font-bold px-6 py-3.5 rounded text-sm tracking-wide transition-all duration-300 hover:scale-105 active:scale-95"
-            >
-              View Projects
-              <ArrowRight className="ml-2 w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </a>
-            <a
-              href="#contact"
-              className="flex items-center justify-center w-full sm:w-auto border border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900/80 text-zinc-300 hover:text-white font-semibold px-6 py-3.5 rounded text-sm tracking-wide transition-all duration-300 hover:scale-105 active:scale-95"
-            >
-              Contact Me
-              <Mail className="ml-2 w-4 h-4" />
-            </a>
-            <a
-              href="/VenkateshKurumalla.pdf?v=2"
-              download="Venkatesh_Kurumalla_Resume.pdf"
-              className="flex items-center justify-center w-full sm:w-auto text-zinc-400 hover:text-zinc-200 font-semibold px-6 py-3.5 rounded text-sm tracking-wide transition-all duration-300 hover:scale-105 active:scale-95 group"
-            >
-              Download Resume
-              <Download className="ml-2 w-4 h-4 transition-transform duration-300 group-hover:translate-y-0.5" />
-            </a>
-          </motion.div>
-        </motion.div>
+      <div className="scroll-cue-wrap pointer-events-none absolute inset-x-0 bottom-6 hidden justify-center md:flex" aria-hidden="true">
+        <span className="scroll-cue glass glass--pill relative block h-10 w-6" />
       </div>
     </section>
   );

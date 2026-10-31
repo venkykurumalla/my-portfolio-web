@@ -1,316 +1,151 @@
-import React, { useRef, useLayoutEffect, useMemo } from "react";
-import { ArrowUpRight, ShieldCheck, MapPin, Database, BookOpen, Smartphone, Trees } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowUpRight, Database, MapPin, BookOpen } from "lucide-react";
+import { gsap, useGSAP } from "../../lib/motion";
 import { portfolioData } from "../../data/portfolioData";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import GlassCard from "../GlassCard";
+import { SectionHeader } from "../Section";
 
-gsap.registerPlugin(ScrollTrigger);
+const { projects } = portfolioData;
 
-const getProjectVisual = (id) => {
-  const base = "relative w-full h-full bg-zinc-950 flex items-center justify-center overflow-hidden group-hover:bg-zinc-900 transition-colors duration-500";
-  const grid = "absolute inset-0 bg-[linear-gradient(to_right,#1f1f23_1px,transparent_1px),linear-gradient(to_bottom,#1f1f23_1px,transparent_1px)] bg-[size:1.5rem_1.5rem] opacity-20";
+// Every project gets at least one visible button: live site / demo, plus Code when a repo exists.
+function getActions(project) {
+  const primary = project.link;
+  const isRepo = primary.includes("github.com");
+  const label = isRepo ? "Code" : primary.includes("drive.google") ? "View Demo" : "Live Website";
+  const actions = [{ href: primary, label, primary: !isRepo }];
+  if (project.github && project.github !== primary) actions.push({ href: project.github, label: "Code", primary: false });
+  return actions;
+}
 
-  switch (id) {
-    case "smart-ambulance":
-      return (
-        <div className={base}>
-          <div className={grid} />
-          <svg className="w-4/5 h-2/3 text-accent/20 z-0 group-hover:scale-105 transition-transform duration-700" viewBox="0 0 200 100">
-            <path d="M 20 80 Q 80 20 120 70 T 180 30" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" />
-            <circle cx="20" cy="80" r="4" className="text-zinc-600" fill="currentColor" />
-            <circle cx="180" cy="30" r="4" className="text-accent" fill="currentColor" />
-          </svg>
-          <div className="absolute flex flex-col items-center z-10 text-center">
-            <MapPin className="w-8 h-8 text-accent animate-bounce mb-2" />
-            <span className="text-xs uppercase font-bold tracking-widest text-zinc-500">Real-Time Geolocation</span>
-          </div>
-        </div>
-      );
-    case "student-api":
-      return (
-        <div className={base}>
-          <div className={grid} />
-          <div className="absolute z-10 flex flex-col items-center text-center group-hover:scale-110 transition-transform duration-700">
-            <Database className="w-8 h-8 text-accent mb-2" />
-            <code className="text-sm text-zinc-400 font-mono bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded">GET /api/v1/students</code>
-          </div>
-          <div className="absolute bottom-4 left-4 text-[10px] font-mono text-zinc-600">Mongoose Schema active</div>
-        </div>
-      );
-    case "ai-tutor-web":
-      return (
-        <div className={base}>
-          <div className={grid} />
-          <div className="absolute z-10 flex flex-col items-center text-center group-hover:-translate-y-2 transition-transform duration-700">
-            <BookOpen className="w-8 h-8 text-accent mb-2" />
-            <span className="text-xs uppercase font-bold tracking-widest text-zinc-500">Web LLM Integration</span>
-          </div>
-          <div className="absolute top-4 right-4 flex space-x-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500/40" />
-            <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/40" />
-            <span className="w-2.5 h-2.5 rounded-full bg-green-500/40" />
-          </div>
-        </div>
-      );
-    case "ai-tutor-app":
-      return (
-        <div className={base}>
-          <div className={grid} />
-          <div className="absolute z-10 flex flex-col items-center text-center group-hover:rotate-2 transition-transform duration-700">
-            <Smartphone className="w-8 h-8 text-accent mb-2" />
-            <span className="text-xs uppercase font-bold tracking-widest text-zinc-500">K-10 Interactive App</span>
-          </div>
-          <div className="absolute bottom-2 right-4 text-[10px] font-mono text-zinc-600">Prompt Engineered</div>
-        </div>
-      );
-    case "ap-forest":
-      return (
-        <div className={base}>
-          <div className={grid} />
-          <div className="absolute z-10 flex flex-col items-center text-center group-hover:scale-105 transition-transform duration-700">
-            <Trees className="w-8 h-8 text-accent mb-2" />
-            <span className="text-xs uppercase font-bold tracking-widest text-zinc-500">APSFA Training Syllabus Hub</span>
-          </div>
-          <div className="absolute bottom-2 right-4 text-[10px] font-mono text-zinc-600">AI Chatbot & RAG Integration</div>
-        </div>
-      );
-    case "smart-exam-portal":
-      return (
-        <div className={base}>
-          <div className={grid} />
-          <div className="absolute z-10 flex flex-col items-center text-center group-hover:scale-105 transition-transform duration-700">
-            <ShieldCheck className="w-8 h-8 text-accent mb-2" />
-            <span className="text-xs uppercase font-bold tracking-widest text-zinc-500">Anti-Cheating Secure Portal</span>
-          </div>
-          <div className="absolute bottom-2 right-4 text-[10px] font-mono text-zinc-600">Real-time WebRTC Proctoring</div>
-        </div>
-      );
-    case "riet-crt":
-      return (
-        <div className={base}>
-          <div className={grid} />
-          <div className="absolute z-10 flex flex-col items-center text-center group-hover:scale-110 transition-transform duration-700">
-            <BookOpen className="w-8 h-8 text-accent mb-2" />
-            <span className="text-xs uppercase font-bold tracking-widest text-zinc-500">CRT Learning Hub</span>
-          </div>
-          <div className="absolute bottom-2 right-4 text-[10px] font-mono text-zinc-600">Campus Recruitment Platform</div>
-        </div>
-      );
-    default:
-      return null;
-  }
-};
+// Projects without screenshots get a glass illustration instead.
+function Visual({ id }) {
+  const Icon = id === "smart-ambulance" ? MapPin : id === "student-api" ? Database : BookOpen;
+  const tone = id === "smart-ambulance" ? "var(--pink)" : id === "student-api" ? "var(--cyan)" : "var(--violet)";
+  return (
+    <div className="absolute inset-0 grid place-items-center" style={{ background: `radial-gradient(circle at 30% 20%, color-mix(in srgb, ${tone} 45%, transparent), transparent 70%), linear-gradient(160deg, rgba(59,130,246,0.18), rgba(139,92,246,0.18))` }}>
+      <Icon className="h-14 w-14 text-white/90" strokeWidth={1.4} aria-hidden="true" />
+    </div>
+  );
+}
 
-export default function Projects() {
-  const sectionRef = useRef(null);
-  const containerRef = useRef(null);
-  const cardsRef = useRef([]);
-
-  // Generate sequence of slides: Info -> Images for each project
-  const slides = useMemo(() => {
-    const sequence = [];
-    portfolioData.projects.forEach(project => {
-      sequence.push({ id: `${project.id}-info`, type: 'info', project, direction: 'up' });
-      
-      if (project.images && project.images.length > 0) {
-        project.images.forEach((img, index) => {
-          sequence.push({
-            id: `${project.id}-media-${index}`,
-            type: 'image',
-            project,
-            imageSrc: img,
-            direction: index === 0 ? 'up' : 'left'
-          });
-        });
-      } else {
-        sequence.push({ id: `${project.id}-media`, type: 'visual', project, direction: 'up' });
-      }
-    });
-    return sequence;
-  }, []);
-
-  useLayoutEffect(() => {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return;
-
-    const section = sectionRef.current;
-    const cards = cardsRef.current.filter(Boolean); // filter out nulls
-    
-    if (!section || cards.length === 0) return;
-
-    let ctx = gsap.context(() => {
-      // Animate cards through a timeline based on the scroll position of the section
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: "bottom bottom", 
-          scrub: 2.5,
-          invalidateOnRefresh: true,
-        },
-      });
-
-      // Set initial states for cards based on their entry direction
-      cards.forEach((card, i) => {
-        const slide = slides[i];
-        if (i === 0) {
-          gsap.set(card, { autoAlpha: 1, scale: 1, x: 0, y: 0 });
-        } else {
-          if (slide.direction === 'left') {
-            gsap.set(card, { autoAlpha: 0, scale: 0.95, x: "100%", y: 0 });
-          } else {
-            gsap.set(card, { autoAlpha: 0, scale: 0.95, x: 0, y: "100%" }); 
-          }
-        }
-      });
-
-      // Build the sequence
-      cards.forEach((card, i) => {
-        const slide = slides[i];
-        
-        if (i === 0) {
-          const nextSlide = slides[i + 1];
-          tl.to(card, {
-            autoAlpha: 0,
-            scale: 0.95,
-            x: nextSlide && nextSlide.direction === 'left' ? "-100%" : 0,
-            y: nextSlide && nextSlide.direction === 'left' ? 0 : "-100%", 
-            duration: 1,
-            ease: "power2.inOut",
-          }, "+=0.8"); 
-        } else {
-          tl.to(card, {
-            autoAlpha: 1,
-            scale: 1,
-            x: 0,
-            y: 0,
-            duration: 1,
-            ease: "power2.inOut", 
-          }, "<");
-
-          if (i !== cards.length - 1) {
-            const nextSlide = slides[i + 1];
-            tl.to(card, {
-              autoAlpha: 0,
-              scale: 0.95,
-              x: nextSlide.direction === 'left' ? "-100%" : 0,
-              y: nextSlide.direction === 'left' ? 0 : "-100%",
-              duration: 1,
-              ease: "power2.inOut",
-            }, "+=0.5"); 
-          }
-        }
-      });
-    }, section);
-
-    return () => ctx.revert();
-  }, [slides.length]); 
+function ProjectCard({ project, featured, index }) {
+  const [active, setActive] = useState(0);
+  const images = project.images ?? [];
+  const actions = getActions(project);
 
   return (
-    <section
-      ref={sectionRef}
-      id="projects-inner"
-      className="relative bg-[#09090b] w-full overflow-x-clip"
-      style={{ height: `${slides.length * 35}vh` }}
+    <GlassCard
+      as="article" large flat hover
+      className={`project-card flex shrink-0 flex-col overflow-hidden p-3 lg:h-[min(600px,calc(100svh-17rem))] ${featured ? "lg:w-[min(1020px,72vw)] lg:flex-row" : "lg:w-[min(440px,34vw)]"}`}
     >
-      {/* Sticky container that stays in the viewport */}
-      <div className="sticky top-0 h-[100dvh] flex flex-col justify-start md:justify-center overflow-hidden pt-24 pb-10 md:py-16">
-        
-        {/* Background glow */}
-        <div className="absolute inset-0 pointer-events-none opacity-30">
-          <div className="absolute top-1/4 -right-1/4 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px]" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 md:px-8 relative z-10 w-full flex flex-col h-full">
-          {/* Heading */}
-          <div className="mb-4 md:mb-6 flex flex-col items-center text-center shrink-0">
-            <span className="text-xs font-bold uppercase tracking-widest text-accent mb-2 block">
-              Projects
-            </span>
-            <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight text-white">
-              Selected Work
-            </h2>
-            <div className="h-[2px] w-12 bg-accent mt-3 mx-auto" />
-          </div>
-
-          {/* Card Container */}
-          <div 
-            ref={containerRef}
-            className="relative w-full h-[60vh] md:h-[85vh] min-h-[420px] md:min-h-[500px] mx-auto perspective-1000 my-auto"
-          >
-            {slides.map((slide, idx) => (
-              <div
-                key={slide.id}
-                ref={(el) => (cardsRef.current[idx] = el)}
-                className="absolute inset-0 w-full h-full will-change-transform"
-              >
-                {slide.type === 'info' && (
-                  <a
-                    href={slide.project.link}
-                    target={slide.project.link.startsWith("http") ? "_blank" : "_self"}
-                    rel="noopener noreferrer"
-                    className="w-full h-full relative group bg-zinc-900/40 backdrop-blur-sm border border-zinc-800/80 rounded-2xl overflow-y-auto hover:border-accent/40 hover:bg-zinc-900/60 transition-colors duration-500 flex flex-col items-center justify-center text-center p-6 md:p-12 shadow-2xl cursor-pointer"
-                  >
-                    {/* Top Right Live Link Button */}
-                    <div className="absolute top-4 right-4 md:top-8 md:right-8 inline-flex shrink-0 items-center text-[10px] md:text-sm font-bold uppercase tracking-wider text-zinc-950 bg-accent hover:bg-accent/90 px-4 py-2 md:px-6 md:py-3 rounded-full transition-all duration-300 group-hover:scale-105 z-10 shadow-lg shadow-accent/20">
-                      Live Website
-                      <ArrowUpRight className="ml-1.5 md:ml-2 w-3.5 h-3.5 md:w-5 md:h-5" />
-                    </div>
-
-                    <div className="flex flex-wrap justify-center gap-2 mb-6 md:mb-8 mt-12 md:mt-0">
-                      {slide.project.technologies.map((tech, i) => (
-                        <span
-                          key={i}
-                          className="px-2.5 md:px-3 py-1.5 bg-zinc-950 border border-zinc-850 text-[10px] md:text-xs text-zinc-400 font-semibold tracking-wide uppercase rounded-full group-hover:border-accent/30 group-hover:text-zinc-200 transition-colors duration-300"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                    
-                    <h3 className="font-display text-3xl md:text-6xl font-bold text-white mb-4 md:mb-6 group-hover:text-accent transition-colors duration-300 max-w-4xl">
-                      {slide.project.title}
-                    </h3>
-                    
-                    <p className="text-zinc-400 font-medium text-sm md:text-xl leading-relaxed group-hover:text-zinc-300 transition-colors duration-300 max-w-3xl">
-                      {slide.project.description}
-                    </p>
-                  </a>
-                )}
-
-                {slide.type === 'image' && (
-                  <a
-                    href={slide.project.link}
-                    target={slide.project.link.startsWith("http") ? "_blank" : "_self"}
-                    rel="noopener noreferrer"
-                    className="w-full h-full rounded-2xl border border-zinc-800/80 overflow-hidden shadow-2xl group cursor-pointer bg-zinc-950/80 p-2 md:p-6 flex items-center justify-center"
-                  >
-                    <img 
-                      src={slide.imageSrc} 
-                      alt={slide.project.title} 
-                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" 
-                    />
-                  </a>
-                )}
-
-                {slide.type === 'visual' && (
-                  <a
-                    href={slide.project.link}
-                    target={slide.project.link.startsWith("http") ? "_blank" : "_self"}
-                    rel="noopener noreferrer"
-                    className="w-full h-full rounded-2xl border border-zinc-800/80 overflow-hidden shadow-2xl cursor-pointer flex items-center justify-center"
-                  >
-                    {getProjectVisual(slide.project.id)}
-                  </a>
-                )}
-              </div>
+      <div className={`card-img relative shrink-0 overflow-hidden rounded-[22px] ${featured ? "h-56 sm:h-72 lg:h-auto lg:w-[52%]" : "h-48 sm:h-60 lg:h-auto lg:min-h-[110px] lg:flex-1"}`}>
+        {images.length ? (
+          images.map((src, i) => (
+            <img key={src} src={src} alt={`${project.title} screenshot ${i + 1}`} width="1024" height="665"
+                 loading="lazy" decoding="async"
+                 className="absolute inset-0 h-full w-full object-cover object-top transition-opacity duration-700"
+                 style={{ opacity: i === active ? 1 : 0 }} />
+          ))
+        ) : (
+          <Visual id={project.id} />
+        )}
+        {featured && images.length > 1 && (
+          <div className="absolute inset-x-3 bottom-3 z-10 flex justify-center gap-1.5">
+            {images.map((_, i) => (
+              <button key={i} type="button" aria-label={`Show screenshot ${i + 1}`} onClick={() => setActive(i)}
+                      className="h-1.5 rounded-full border-0 p-0 transition-all duration-300"
+                      style={{ width: i === active ? 28 : 8, background: i === active ? "#fff" : "rgba(255,255,255,0.5)" }} />
             ))}
           </div>
-          
-          {/* Scroll indicator for the pinned section */}
-          <div className="mt-4 md:mt-8 flex justify-center text-zinc-500 text-[10px] md:text-xs font-semibold tracking-widest uppercase animate-pulse shrink-0">
-            Scroll to explore projects
+        )}
+      </div>
+
+      <div className={`flex min-h-0 flex-1 flex-col p-4 md:p-6 ${featured ? "lg:w-[48%] lg:flex-none lg:p-8" : ""}`}>
+        <div className="mb-3 flex shrink-0 items-center gap-2 text-xs dim">
+          <span className="tabular-nums">{String(index + 1).padStart(2, "0")}</span>
+          {featured && <span className="chip !py-1 !text-[0.7rem]" style={{ color: "var(--cyan)" }}>Featured · Production</span>}
+        </div>
+        <h3 className={`display shrink-0 ${featured ? "text-[clamp(1.6rem,3vw,2.4rem)]" : "text-[1.3rem]"}`} style={{ lineHeight: 1.08 }}>{project.title}</h3>
+
+        {/* Long descriptions scroll inside the card on short desktop screens so the buttons never get pushed out */}
+        <div className="mt-3 min-h-0 lg:flex-1 lg:overflow-y-auto" data-lenis-prevent>
+          <p className="text-[0.85rem] leading-relaxed muted">{project.description}</p>
+          <ul className="mt-4 flex flex-wrap gap-1.5">
+            {project.technologies.map((t) => <li key={t} className="chip !px-2.5 !py-1 !text-[0.7rem]">{t}</li>)}
+          </ul>
+        </div>
+
+        <div className="relative z-10 mt-5 flex shrink-0 flex-wrap gap-2.5">
+          {actions.map((a) => (
+            <a key={a.label} href={a.href} target="_blank" rel="noopener noreferrer"
+               className={`btn ${a.primary ? "btn-primary" : "btn-glass"} !px-5 !py-2.5 !text-sm`}
+               aria-label={`${a.label}: ${project.title} (opens in a new tab)`}>
+              {a.label} <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+          ))}
+        </div>
+      </div>
+    </GlassCard>
+  );
+}
+
+export default function Projects() {
+  const root = useRef(null);
+  const track = useRef(null);
+  const bar = useRef(null);
+  const count = useRef(null);
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+
+      // Desktop: pinned section scrolls the card track horizontally.
+      mm.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
+        const distance = () => Math.max(0, track.current.scrollWidth - window.innerWidth + 64);
+        gsap.to(track.current, {
+          x: () => -distance(), ease: "none",
+          scrollTrigger: {
+            trigger: ".projects-pin", start: "top top", end: () => `+=${distance()}`,
+            pin: true, scrub: 0.8, invalidateOnRefresh: true, anticipatePin: 1,
+            onUpdate: (self) => {
+              bar.current.style.transform = `scaleX(${self.progress})`;
+              const n = String(Math.min(projects.length, Math.floor(self.progress * projects.length) + 1)).padStart(2, "0");
+              if (count.current.textContent !== n) count.current.textContent = n;
+            },
+          },
+        });
+      });
+
+      // Mobile / tablet / reduced motion: vertical stack with simple reveals.
+      mm.add("(max-width: 1023px), (prefers-reduced-motion: reduce)", () => {
+        gsap.utils.toArray(".project-card").forEach((card) => {
+          gsap.from(card, { opacity: 0, y: 50, duration: 0.9, ease: "expo.out", scrollTrigger: { trigger: card, start: "top 90%", once: true } });
+        });
+      });
+      return () => mm.revert();
+    },
+    { scope: root },
+  );
+
+  return (
+    <section id="projects" ref={root} aria-label="Projects">
+      <div className="projects-pin flex flex-col justify-center py-24 lg:h-[100svh] lg:overflow-hidden lg:py-0 lg:pt-20">
+        <div className="container-x">
+          <div className="flex items-end justify-between gap-6">
+            <SectionHeader eyebrow="Projects" title="Selected work." className="!mb-8 lg:!mb-6" />
+            <div className="mb-8 hidden shrink-0 items-center gap-4 lg:mb-6 lg:flex" aria-hidden="true">
+              <span className="text-sm tabular-nums dim"><span ref={count}>01</span> / {String(projects.length).padStart(2, "0")}</span>
+              <span className="block h-[3px] w-40 overflow-hidden rounded-full" style={{ background: "var(--glass-border-lo)" }}>
+                <span ref={bar} className="block h-full origin-left rounded-full" style={{ transform: "scaleX(0)", background: "linear-gradient(90deg, var(--cyan), var(--violet))" }} />
+              </span>
+            </div>
           </div>
+        </div>
+
+        <div ref={track} className="projects-track flex flex-col gap-6 px-[max(1.25rem,4vw)] lg:flex-row lg:items-center lg:gap-8 lg:pl-[max(2rem,calc((100vw-1240px)/2))] lg:pr-16">
+          {projects.map((p, i) => (
+            <ProjectCard key={p.id} project={p} index={i} featured={p.id === "ap-forest"} />
+          ))}
         </div>
       </div>
     </section>
