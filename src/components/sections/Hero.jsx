@@ -95,7 +95,7 @@ export default function Hero() {
                   <img
                     src="/VenkateshKurumalla.jpg"
                     alt="Portrait of Venkatesh Kurumalla"
-                    width="640" height="800" decoding="async" fetchPriority="high"
+                    width="458" height="573" decoding="async" fetchPriority="high"
                     className="absolute inset-0 h-full w-full object-cover"
                     onError={() => setPhotoFailed(true)}
                   />
