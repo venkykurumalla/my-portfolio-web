@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
-import { gsap, ScrollTrigger, onReady, isReady, prefersReducedMotion, scrollState } from "../lib/motion";
+import { gsap, ScrollTrigger, prefersReducedMotion, scrollState } from "../lib/motion";
 
 /**
- * Lenis smooth scroll driven by GSAP's ticker and synced with ScrollTrigger.
+ * Lenis smooth scroll driven by GSAP's ticker (the only rAF loop) and synced with ScrollTrigger.
  * Touch devices keep native momentum scrolling (syncTouch off) — it feels
  * better on phones and avoids fighting the browser's URL-bar behaviour.
  */
@@ -13,7 +13,7 @@ export default function SmoothScroll({ children }) {
     if (prefersReducedMotion()) return;
 
     const lenis = new Lenis({
-      lerp: 0.08,
+      lerp: 0.1,
       wheelMultiplier: 0.95,
       touchMultiplier: 1.2,
       syncTouch: false,
@@ -27,11 +27,6 @@ export default function SmoothScroll({ children }) {
 
     const tick = (time) => lenis.raf(time * 1000);
     gsap.ticker.add(tick);
-    gsap.ticker.lagSmoothing(0);
-
-    // Hold scrolling until the preloader curtain has lifted.
-    if (!isReady()) lenis.stop();
-    const unsub = onReady(() => lenis.start());
 
     const onClick = (e) => {
       const link = e.target.closest?.('a[href^="#"]');
@@ -45,7 +40,6 @@ export default function SmoothScroll({ children }) {
     document.addEventListener("click", onClick);
 
     return () => {
-      unsub();
       document.removeEventListener("click", onClick);
       gsap.ticker.remove(tick);
       lenis.destroy();

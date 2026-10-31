@@ -18,8 +18,8 @@ export function SectionHeader({ eyebrow, title, align = "left", className = "" }
 }
 
 /**
- * Page section. `reveal` adds a clip-path mask reveal on enter — leave it off for sections
- * that pin their own content, since clip-path ancestors would clip a fixed pin.
+ * Page section. `reveal` adds a fade-and-rise on enter — leave it off for sections
+ * that pin their own content, since a transformed ancestor would break a fixed pin.
  */
 export default function Section({ id, eyebrow, title, reveal = true, align, className = "", children }) {
   const root = useRef(null);
@@ -33,8 +33,8 @@ export default function Section({ id, eyebrow, title, reveal = true, align, clas
         return;
       }
       gsap.from(body.current, {
-        clipPath: "inset(7% 3% 0% 3% round 48px)", y: 60, opacity: 0, duration: 1.3, ease: "expo.out",
-        clearProps: "clipPath,transform,opacity",
+        y: 50, opacity: 0, duration: 1, ease: "expo.out",
+        clearProps: "transform,opacity",
         scrollTrigger: { trigger: body.current, start: "top 88%", once: true },
       });
     },

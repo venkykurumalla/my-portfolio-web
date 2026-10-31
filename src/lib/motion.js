@@ -20,24 +20,6 @@ export const isTouch = () =>
 // Shared scroll state, written by SmoothScroll and read by marquee / skew effects.
 export const scrollState = { velocity: 0, lenis: null };
 
-// Preloader handshake: hero animations wait until the curtain lifts.
-let ready = false;
-const subscribers = new Set();
-export const isReady = () => ready;
-export const onReady = (cb) => {
-  if (ready) {
-    cb();
-    return () => {};
-  }
-  subscribers.add(cb);
-  return () => subscribers.delete(cb);
-};
-export const setReady = () => {
-  ready = true;
-  subscribers.forEach((cb) => cb());
-  subscribers.clear();
-};
-
 export function scrollToTarget(target, options = {}) {
   const { lenis } = scrollState;
   if (lenis) {
@@ -53,7 +35,8 @@ export function useSkew(max = 5) {
   const ref = useRef(null);
   useGSAP(
     () => {
-      if (prefersReducedMotion() || !ref.current) return;
+      // Desktop only: skewing large text on phones costs frames for little payoff.
+      if (prefersReducedMotion() || isTouch() || window.innerWidth < 1024 || !ref.current) return;
       const setSkew = gsap.quickSetter(ref.current, "skewY", "deg");
       let current = 0;
       const tick = () => {

@@ -39,11 +39,11 @@ export default function Skills() {
     () => {
       if (prefersReducedMotion()) return;
       gsap.from(".skill-card", {
-        opacity: 0, y: 50, scale: 0.94, duration: 1, stagger: 0.09, ease: "expo.out",
+        opacity: 0, y: 40, duration: 0.9, stagger: 0.08, ease: "expo.out", clearProps: "transform,opacity",
         scrollTrigger: { trigger: grid.current, start: "top 85%", once: true },
       });
       gsap.from(".skill-chip", {
-        opacity: 0, y: 14, scale: 0.85, filter: "blur(6px)", duration: 0.7, stagger: 0.035, delay: 0.25, ease: "back.out(1.6)",
+        opacity: 0, y: 14, scale: 0.9, duration: 0.6, stagger: 0.03, delay: 0.2, ease: "back.out(1.6)", clearProps: "transform,opacity",
         scrollTrigger: { trigger: grid.current, start: "top 85%", once: true },
       });
     },
@@ -54,7 +54,7 @@ export default function Skills() {
     <Section id="skills" eyebrow="Skills" title="Tools I think in." reveal={false}>
       <div ref={grid} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {portfolioData.skills.map((c) => (
-          <GlassCard key={c.category} tint className="skill-card p-6">
+          <GlassCard key={c.category} flat className="skill-card p-6">
             <h3 className="eyebrow mb-4">{c.category}</h3>
             <ul className="flex flex-wrap gap-2">
               {c.items.map((item) => (

@@ -12,8 +12,7 @@ export default function Education() {
     () => {
       if (prefersReducedMotion()) return;
       gsap.from(".edu-card", {
-        clipPath: "inset(100% 0% 0% 0% round 32px)", opacity: 0, y: 40, duration: 1.3, stagger: 0.16, ease: "expo.out",
-        clearProps: "clipPath",
+        opacity: 0, y: 40, duration: 1, stagger: 0.14, ease: "expo.out", clearProps: "transform,opacity",
         scrollTrigger: { trigger: grid.current, start: "top 85%", once: true },
       });
     },
@@ -24,7 +23,7 @@ export default function Education() {
     <Section id="education" eyebrow="Education" title="Where I learn." reveal={false}>
       <div ref={grid} className="grid gap-5 md:grid-cols-2">
         {portfolioData.education.map((e) => (
-          <GlassCard key={e.degree} tint large className="edu-card flex flex-col p-7 md:p-9">
+          <GlassCard key={e.degree} flat large className="edu-card flex flex-col p-7 md:p-9">
             <GraduationCap className="mb-6 h-7 w-7" style={{ color: "var(--cyan)" }} aria-hidden="true" />
             <p className="display text-gradient text-[clamp(2rem,4vw,2.8rem)]">{e.duration}</p>
             <h3 className="mt-4 text-xl font-semibold tracking-tight">{e.degree}</h3>

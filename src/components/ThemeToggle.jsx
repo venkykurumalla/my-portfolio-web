@@ -20,7 +20,7 @@ export default function ThemeToggle({ className = "" }) {
       aria-checked={isLight}
       aria-label="Light theme"
       onClick={() => setTheme(isLight ? "dark" : "light")}
-      className={`glass glass--pill relative h-9 w-[68px] shrink-0 cursor-pointer border-0 p-0 ${className}`}
+      className={`chip relative h-9 w-[68px] shrink-0 cursor-pointer border-0 p-0 ${className}`}
     >
       <Moon className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 opacity-70" aria-hidden="true" />
       <Sun className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 opacity-70" aria-hidden="true" />

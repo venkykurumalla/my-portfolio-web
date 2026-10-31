@@ -14,8 +14,7 @@ export default function Certifications() {
     () => {
       if (prefersReducedMotion()) return;
       gsap.from(".cert-card", {
-        opacity: 0, y: 60, rotationX: -25, transformPerspective: 900, transformOrigin: "50% 100%", filter: "blur(10px)",
-        duration: 1.3, stagger: 0.18, ease: "expo.out",
+        opacity: 0, y: 50, duration: 1, stagger: 0.14, ease: "expo.out", clearProps: "transform,opacity",
         scrollTrigger: { trigger: grid.current, start: "top 85%", once: true },
       });
     },
@@ -29,7 +28,7 @@ export default function Certifications() {
           const Icon = icons[i % icons.length];
           const hasLink = c.link && c.link !== "#";
           return (
-            <GlassCard key={c.name} tint large tilt className="cert-card flex flex-col p-7 md:p-9">
+            <GlassCard key={c.name} flat large className="cert-card flex flex-col p-7 md:p-9">
               <span className="mb-6 grid h-12 w-12 place-items-center rounded-2xl" style={{ background: "linear-gradient(135deg, var(--blue), var(--violet))" }}>
                 <Icon className="h-6 w-6 text-white" aria-hidden="true" />
               </span>

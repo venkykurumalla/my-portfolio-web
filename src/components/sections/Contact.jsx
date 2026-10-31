@@ -4,7 +4,7 @@ import { gsap, useGSAP, useSkew, prefersReducedMotion } from "../../lib/motion";
 import { portfolioData } from "../../data/portfolioData";
 import { Github, Linkedin } from "../Icons";
 import GlassCard from "../GlassCard";
-import MagneticButton from "../MagneticButton";
+import Button from "../Button";
 import RevealText from "../RevealText";
 
 const { personalInfo } = portfolioData;
@@ -21,11 +21,11 @@ export default function Contact() {
       if (prefersReducedMotion()) return;
       // Gradient text can't be split per-character (background-clip breaks), so it reveals as one word.
       gsap.from(".contact-word", {
-        yPercent: 60, opacity: 0, filter: "blur(18px)", letterSpacing: "0.1em", duration: 1.4, ease: "expo.out", delay: 0.3,
+        yPercent: 50, opacity: 0, duration: 1, ease: "expo.out", delay: 0.2, clearProps: "transform,opacity",
         scrollTrigger: { trigger: ".contact-word", start: "top 90%", once: true },
       });
       gsap.from(".contact-reveal", {
-        opacity: 0, y: 50, duration: 1.1, stagger: 0.14, ease: "expo.out",
+        opacity: 0, y: 40, duration: 0.9, stagger: 0.12, ease: "expo.out", clearProps: "transform,opacity",
         scrollTrigger: { trigger: ".contact-grid", start: "top 85%", once: true },
       });
     },
@@ -83,7 +83,7 @@ export default function Contact() {
         </h2>
 
         <div className="contact-grid mt-14 grid gap-5 lg:mt-20 lg:grid-cols-[1.15fr_0.85fr]">
-          <GlassCard large tint className="contact-reveal p-6 md:p-10">
+          <GlassCard large flat className="contact-reveal p-6 md:p-10">
             {status === "success" ? (
               <div className="grid min-h-[22rem] place-items-center text-center" role="status">
                 <div>
@@ -104,9 +104,9 @@ export default function Contact() {
                 <div className="field"><input id="c-email" name="email" type="email" placeholder=" " required autoComplete="email" /><label htmlFor="c-email">Email address</label></div>
                 <div className="field"><textarea id="c-message" name="message" rows={5} placeholder=" " required /><label htmlFor="c-message">Tell me about your project</label></div>
                 <div className="mt-2 flex flex-wrap items-center gap-4">
-                  <MagneticButton as="button" type="submit" variant="primary" disabled={status === "sending"}>
+                  <Button as="button" type="submit" variant="primary" disabled={status === "sending"}>
                     {status === "sending" ? "Sending…" : "Send message"} <Send className="h-4 w-4" aria-hidden="true" />
-                  </MagneticButton>
+                  </Button>
                   {status === "error" && (
                     <p role="alert" className="text-sm" style={{ color: "var(--pink)" }}>
                       Couldn&apos;t send — please email me at <a href={`mailto:${personalInfo.email}`} className="underline">{personalInfo.email}</a>.
@@ -117,7 +117,7 @@ export default function Contact() {
             )}
           </GlassCard>
 
-          <GlassCard large tint className="contact-reveal flex flex-col justify-between gap-10 p-6 md:p-10">
+          <GlassCard large flat className="contact-reveal flex flex-col justify-between gap-10 p-6 md:p-10">
             <ul className="flex flex-col gap-6">
               {details.map(({ icon: Icon, label, value, href }) => (
                 <li key={label} className="flex items-center gap-4">
@@ -132,9 +132,9 @@ export default function Contact() {
               ))}
             </ul>
             <div className="flex gap-3">
-              <MagneticButton variant="icon" href={personalInfo.socials.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub profile"><Github className="h-5 w-5" /></MagneticButton>
-              <MagneticButton variant="icon" href={personalInfo.socials.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile"><Linkedin className="h-5 w-5" /></MagneticButton>
-              <MagneticButton variant="icon" href={`mailto:${personalInfo.email}`} aria-label="Send an email"><Mail className="h-5 w-5" /></MagneticButton>
+              <Button variant="icon" href={personalInfo.socials.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub profile"><Github className="h-5 w-5" /></Button>
+              <Button variant="icon" href={personalInfo.socials.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile"><Linkedin className="h-5 w-5" /></Button>
+              <Button variant="icon" href={`mailto:${personalInfo.email}`} aria-label="Send an email"><Mail className="h-5 w-5" /></Button>
             </div>
           </GlassCard>
         </div>

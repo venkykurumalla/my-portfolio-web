@@ -68,7 +68,7 @@ export default function About() {
 
           <div className="about-stats mt-8 grid grid-cols-3 gap-3 md:mt-12 md:gap-5">
             {stats.map((s) => (
-              <GlassCard key={s.label} className="about-stat p-4 text-center md:p-7" tint>
+              <GlassCard key={s.label} className="about-stat p-4 text-center md:p-7" flat>
                 <div className="display text-[clamp(1.8rem,5vw,3.6rem)] text-gradient">
                   <span className="stat-num" data-to={s.value}>{reduced ? s.value : 0}</span>
                   <span>+</span>

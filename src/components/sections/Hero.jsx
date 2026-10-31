@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import { ArrowRight, Download, MapPin } from "lucide-react";
-import { gsap, useGSAP, useSkew, onReady, isReady, prefersReducedMotion, SplitText } from "../../lib/motion";
+import { gsap, useGSAP, useSkew, prefersReducedMotion } from "../../lib/motion";
 import { portfolioData } from "../../data/portfolioData";
 import GlassCard from "../GlassCard";
-import MagneticButton from "../MagneticButton";
+import Button from "../Button";
 
 const { personalInfo, hero } = portfolioData;
 const [firstName, lastName] = personalInfo.name.split(" ");
@@ -24,38 +24,28 @@ export default function Hero() {
       const cycle = gsap.delayedCall(2.4, function swap() {
         if (reduced) { i = (i + 1) % hero.roles.length; el.textContent = hero.roles[i]; cycle.restart(true); return; }
         gsap.timeline({ onComplete: () => cycle.restart(true) })
-          .to(el, { yPercent: -80, opacity: 0, filter: "blur(8px)", duration: 0.45, ease: "power3.in" })
+          .to(el, { yPercent: -80, opacity: 0, duration: 0.35, ease: "power3.in" })
           .add(() => { i = (i + 1) % hero.roles.length; el.textContent = hero.roles[i]; })
-          .fromTo(el, { yPercent: 80, opacity: 0, filter: "blur(8px)" }, { yPercent: 0, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" });
+          .fromTo(el, { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.5, ease: "expo.out" });
       });
       cycle.pause();
       const startCycle = () => cycle.restart(true);
 
-      if (reduced) {
-        gsap.from(".hero-copy, .hero-card-wrap", { opacity: 0, duration: 0.8, stagger: 0.1 });
-        startCycle();
-        return;
-      }
+      if (reduced) { startCycle(); return; }
 
-      // Entrance timeline — paused until the preloader curtain lifts.
-      const split = SplitText.create(".hero-first", { type: "chars" });
-      const tl = gsap.timeline({ paused: !isReady(), delay: 0.1, onComplete: startCycle });
-      tl.from(".hero-badge", { opacity: 0, y: 20, duration: 0.8, ease: "expo.out" })
-        .from(split.chars, { yPercent: 70, opacity: 0, filter: "blur(16px)", duration: 1.1, stagger: 0.04, ease: "expo.out" }, "<0.1")
-        .from(".hero-last", { yPercent: 60, opacity: 0, filter: "blur(18px)", letterSpacing: "0.12em", duration: 1.4, ease: "expo.out" }, "<0.25")
-        .from(".hero-sub", { opacity: 0, y: 24, duration: 1, ease: "expo.out" }, "<0.4")
-        .from(".hero-cta", { opacity: 0, y: 24, scale: 0.94, duration: 0.9, stagger: 0.1, ease: "expo.out" }, "<0.15")
-        .from(".hero-card", { opacity: 0, y: 70, scale: 0.9, filter: "blur(14px)", duration: 1.5, ease: "expo.out" }, 0.3)
-        .from(".hero-orbit", { opacity: 0, scale: 0.6, duration: 1, stagger: 0.15, ease: "back.out(1.6)" }, 1)
-        .from(".scroll-cue-wrap", { opacity: 0, duration: 1 }, 1.4);
-      const unsub = isReady() ? undefined : onReady(() => tl.play());
+      // Hero is visible immediately; content just fades up quickly (0.5s).
+      gsap.from(".hero-copy > *, .hero-card-wrap", { opacity: 0, y: 16, duration: 0.5, stagger: 0.05, ease: "power2.out", clearProps: "transform,opacity" });
+      startCycle();
 
-      // Scroll parallax: copy drifts up and fades, photo frame drifts at its own pace.
-      gsap.to(".hero-copy", { yPercent: -14, opacity: 0.1, ease: "none", scrollTrigger: { trigger: root.current, start: "top top", end: "bottom top", scrub: true } });
-      gsap.to(".hero-card-wrap", { yPercent: -22, ease: "none", scrollTrigger: { trigger: root.current, start: "top top", end: "bottom top", scrub: true } });
-      gsap.to(".scroll-cue-wrap", { opacity: 0, ease: "none", scrollTrigger: { trigger: root.current, start: "top top", end: "20% top", scrub: true } });
+      // Scroll parallax (desktop only): copy drifts up and fades, photo frame drifts at its own pace.
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 1024px) and (hover: hover)", () => {
+        const trigger = { trigger: root.current, start: "top top", end: "bottom top", scrub: true };
+        gsap.to(".hero-copy", { yPercent: -14, opacity: 0.1, ease: "none", scrollTrigger: trigger });
+        gsap.to(".hero-card-wrap", { yPercent: -22, ease: "none", scrollTrigger: trigger });
+      });
 
-      return () => { unsub?.(); split.revert(); cycle.kill(); };
+      return () => { mm.revert(); cycle.kill(); };
     },
     { scope: root },
   );
@@ -88,17 +78,17 @@ export default function Hero() {
           </p>
 
           <div className="mt-10 flex flex-wrap gap-3.5">
-            <MagneticButton href="#projects" variant="primary" className="hero-cta">
+            <Button href="#projects" variant="primary">
               View Projects <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </MagneticButton>
-            <MagneticButton href={personalInfo.resume} download="Venkatesh_Kurumalla_Resume.pdf" variant="glass" className="hero-cta">
+            </Button>
+            <Button href={personalInfo.resume} download="Venkatesh_Kurumalla_Resume.pdf" variant="glass">
               Download Resume <Download className="h-4 w-4" aria-hidden="true" />
-            </MagneticButton>
+            </Button>
           </div>
         </div>
 
         <div className="hero-card-wrap relative mx-auto w-full max-w-[22rem] lg:max-w-none">
-          <GlassCard tilt large liquid className="hero-card float-slow aspect-[4/5] overflow-hidden p-3">
+          <GlassCard large className="hero-card float-slow aspect-[4/5] overflow-hidden p-3">
             <div className="relative h-full w-full overflow-hidden rounded-[22px]" style={{ background: "linear-gradient(160deg, rgba(59,130,246,0.35), rgba(139,92,246,0.35) 55%, rgba(244,114,182,0.3))" }}>
               {!photoFailed && (
                 <picture>

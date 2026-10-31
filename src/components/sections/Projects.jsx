@@ -7,8 +7,15 @@ import { SectionHeader } from "../Section";
 
 const { projects } = portfolioData;
 
-const linkLabel = (url) =>
-  url.includes("github.com") ? "View Code" : url.includes("drive.google") ? "View Demo" : "Live Site";
+// Every project gets at least one visible button: live site / demo, plus Code when a repo exists.
+function getActions(project) {
+  const primary = project.link;
+  const isRepo = primary.includes("github.com");
+  const label = isRepo ? "Code" : primary.includes("drive.google") ? "View Demo" : "Live Website";
+  const actions = [{ href: primary, label, primary: !isRepo }];
+  if (project.github && project.github !== primary) actions.push({ href: project.github, label: "Code", primary: false });
+  return actions;
+}
 
 // Projects without screenshots get a glass illustration instead.
 function Visual({ id }) {
@@ -24,13 +31,14 @@ function Visual({ id }) {
 function ProjectCard({ project, featured, index }) {
   const [active, setActive] = useState(0);
   const images = project.images ?? [];
+  const actions = getActions(project);
 
   return (
     <GlassCard
-      as="article" tilt large tint
-      className={`project-card flex shrink-0 overflow-hidden p-3 ${featured ? "flex-col lg:flex-row lg:w-[min(1020px,72vw)]" : "flex-col lg:w-[min(440px,34vw)]"} lg:h-[min(580px,calc(100svh-14rem))]`}
+      as="article" large flat hover
+      className={`project-card flex shrink-0 flex-col overflow-hidden p-3 lg:h-[min(600px,calc(100svh-17rem))] ${featured ? "lg:w-[min(1020px,72vw)] lg:flex-row" : "lg:w-[min(440px,34vw)]"}`}
     >
-      <div className={`card-img relative overflow-hidden rounded-[22px] ${featured ? "min-h-[220px] lg:w-[52%]" : "min-h-[160px] flex-1 lg:min-h-[110px]"}`} style={{ aspectRatio: featured ? undefined : undefined }}>
+      <div className={`card-img relative shrink-0 overflow-hidden rounded-[22px] ${featured ? "h-56 sm:h-72 lg:h-auto lg:w-[52%]" : "h-48 sm:h-60 lg:h-auto lg:min-h-[110px] lg:flex-1"}`}>
         {images.length ? (
           images.map((src, i) => (
             <img key={src} src={src} alt={`${project.title} screenshot ${i + 1}`} width="1024" height="665"
@@ -42,7 +50,7 @@ function ProjectCard({ project, featured, index }) {
           <Visual id={project.id} />
         )}
         {featured && images.length > 1 && (
-          <div className="absolute inset-x-3 bottom-3 flex justify-center gap-1.5">
+          <div className="absolute inset-x-3 bottom-3 z-10 flex justify-center gap-1.5">
             {images.map((_, i) => (
               <button key={i} type="button" aria-label={`Show screenshot ${i + 1}`} onClick={() => setActive(i)}
                       className="h-1.5 rounded-full border-0 p-0 transition-all duration-300"
@@ -52,20 +60,30 @@ function ProjectCard({ project, featured, index }) {
         )}
       </div>
 
-      <div className={`flex min-h-0 flex-col p-4 md:p-6 ${featured ? "lg:w-[48%] lg:p-8" : ""}`}>
-        <div className="mb-3 flex items-center gap-2 text-xs dim">
+      <div className={`flex min-h-0 flex-1 flex-col p-4 md:p-6 ${featured ? "lg:w-[48%] lg:flex-none lg:p-8" : ""}`}>
+        <div className="mb-3 flex shrink-0 items-center gap-2 text-xs dim">
           <span className="tabular-nums">{String(index + 1).padStart(2, "0")}</span>
           {featured && <span className="chip !py-1 !text-[0.7rem]" style={{ color: "var(--cyan)" }}>Featured · Production</span>}
         </div>
-        <h3 className={`display ${featured ? "text-[clamp(1.6rem,3vw,2.4rem)]" : "text-[1.3rem]"}`} style={{ lineHeight: 1.08 }}>{project.title}</h3>
-        <p className={`mt-3 leading-relaxed muted ${featured ? "text-[0.875rem]" : "text-[0.82rem]"}`}>{project.description}</p>
-        <ul className="mt-4 flex flex-wrap gap-1.5">
-          {project.technologies.map((t) => <li key={t} className="chip !px-2.5 !py-1 !text-[0.7rem]">{t}</li>)}
-        </ul>
-        <a href={project.link} target="_blank" rel="noopener noreferrer"
-           className="btn btn-glass mt-auto self-start !px-4 !py-2.5 !text-sm" style={{ marginTop: "1.25rem" }}>
-          {linkLabel(project.link)} <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-        </a>
+        <h3 className={`display shrink-0 ${featured ? "text-[clamp(1.6rem,3vw,2.4rem)]" : "text-[1.3rem]"}`} style={{ lineHeight: 1.08 }}>{project.title}</h3>
+
+        {/* Long descriptions scroll inside the card on short desktop screens so the buttons never get pushed out */}
+        <div className="mt-3 min-h-0 lg:flex-1 lg:overflow-y-auto" data-lenis-prevent>
+          <p className="text-[0.85rem] leading-relaxed muted">{project.description}</p>
+          <ul className="mt-4 flex flex-wrap gap-1.5">
+            {project.technologies.map((t) => <li key={t} className="chip !px-2.5 !py-1 !text-[0.7rem]">{t}</li>)}
+          </ul>
+        </div>
+
+        <div className="relative z-10 mt-5 flex shrink-0 flex-wrap gap-2.5">
+          {actions.map((a) => (
+            <a key={a.label} href={a.href} target="_blank" rel="noopener noreferrer"
+               className={`btn ${a.primary ? "btn-primary" : "btn-glass"} !px-5 !py-2.5 !text-sm`}
+               aria-label={`${a.label}: ${project.title} (opens in a new tab)`}>
+              {a.label} <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+          ))}
+        </div>
       </div>
     </GlassCard>
   );
@@ -90,8 +108,9 @@ export default function Projects() {
             trigger: ".projects-pin", start: "top top", end: () => `+=${distance()}`,
             pin: true, scrub: 0.8, invalidateOnRefresh: true, anticipatePin: 1,
             onUpdate: (self) => {
-              gsap.set(bar.current, { scaleX: self.progress });
-              count.current.textContent = String(Math.min(projects.length, Math.floor(self.progress * projects.length) + 1)).padStart(2, "0");
+              bar.current.style.transform = `scaleX(${self.progress})`;
+              const n = String(Math.min(projects.length, Math.floor(self.progress * projects.length) + 1)).padStart(2, "0");
+              if (count.current.textContent !== n) count.current.textContent = n;
             },
           },
         });
@@ -110,7 +129,7 @@ export default function Projects() {
 
   return (
     <section id="projects" ref={root} aria-label="Projects">
-      <div className="projects-pin flex flex-col justify-center py-24 lg:h-[100svh] lg:overflow-hidden lg:py-0 lg:pt-24">
+      <div className="projects-pin flex flex-col justify-center py-24 lg:h-[100svh] lg:overflow-hidden lg:py-0 lg:pt-20">
         <div className="container-x">
           <div className="flex items-end justify-between gap-6">
             <SectionHeader eyebrow="Projects" title="Selected work." className="!mb-8 lg:!mb-6" />
@@ -123,7 +142,7 @@ export default function Projects() {
           </div>
         </div>
 
-        <div ref={track} className="projects-track flex flex-col gap-6 px-[max(1.25rem,4vw)] lg:flex-row lg:items-center lg:gap-8 lg:pl-[max(2rem,calc((100vw-1240px)/2))] lg:pr-16" style={{ willChange: "auto" }}>
+        <div ref={track} className="projects-track flex flex-col gap-6 px-[max(1.25rem,4vw)] lg:flex-row lg:items-center lg:gap-8 lg:pl-[max(2rem,calc((100vw-1240px)/2))] lg:pr-16">
           {projects.map((p, i) => (
             <ProjectCard key={p.id} project={p} index={i} featured={p.id === "ap-forest"} />
           ))}

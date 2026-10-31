@@ -24,7 +24,7 @@ export default function Experience() {
         gsap.utils.toArray(".exp-item").forEach((item, i) => {
           const fromX = wide ? (i % 2 === 0 ? -90 : 90) : 40;
           gsap.from(item.querySelector(".exp-card"), {
-            x: fromX, opacity: 0, filter: "blur(10px)", duration: 1.2, ease: "expo.out",
+            x: fromX, opacity: 0, duration: 1, ease: "expo.out", clearProps: "transform,opacity",
             scrollTrigger: { trigger: item, start: "top 82%", once: true },
           });
           const dot = item.querySelector(".timeline-dot");
@@ -49,7 +49,7 @@ export default function Experience() {
         {portfolioData.experience.map((job, i) => (
           <li key={job.company} className={`exp-item relative pb-12 pl-10 last:pb-0 md:flex md:pl-0 ${i % 2 === 0 ? "md:justify-start" : "md:justify-end"}`}>
             <span className="timeline-dot absolute left-0 top-8 md:left-1/2 md:-ml-2" aria-hidden="true" />
-            <GlassCard tint large className="exp-card p-6 md:w-[calc(50%-2.5rem)] md:p-8">
+            <GlassCard flat large className="exp-card p-6 md:w-[calc(50%-2.5rem)] md:p-8">
               <p className="chip mb-4 !text-xs" style={{ color: "var(--cyan)" }}>{job.duration}</p>
               <h3 className="display text-[clamp(1.4rem,2.6vw,1.9rem)]" style={{ lineHeight: 1.1 }}>{job.role}</h3>
               <p className="mt-1.5 flex items-center gap-2 text-sm font-medium muted">

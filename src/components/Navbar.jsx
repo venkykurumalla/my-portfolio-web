@@ -9,8 +9,8 @@ const menuVariants = {
   show: { opacity: 1, transition: { duration: 0.35, staggerChildren: 0.06, delayChildren: 0.1 } },
 };
 const itemVariants = {
-  hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
-  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
 };
 
 export default function Navbar() {
@@ -63,14 +63,14 @@ export default function Navbar() {
 
   return (
     <>
-      <a href="#main" className="sr-only-focusable glass glass--pill fixed left-4 top-4 z-[70] px-4 py-2 text-sm">
+      <a href="#main" className="sr-only-focusable glass glass--flat glass--pill fixed left-4 top-4 z-[70] px-4 py-2 text-sm">
         Skip to content
       </a>
 
       <header className="fixed inset-x-0 top-0 z-[60] flex justify-center px-4 pt-4 pointer-events-none">
         <nav
           aria-label="Primary"
-          className={`nav glass glass--pill glass--liquid pointer-events-auto flex items-center gap-1.5 ${scrolled ? "is-scrolled py-1.5 pl-2 pr-2" : "py-2.5 pl-3 pr-3"}`}
+          className={`nav glass glass--pill pointer-events-auto flex items-center gap-1.5 py-2 pl-2.5 pr-2.5 ${scrolled ? "is-scrolled" : ""}`}
         >
           <a href="#home" onClick={go("home")} aria-label="Venkatesh Kurumalla — home"
              className="display grid h-9 w-9 place-items-center rounded-full text-sm text-white"
@@ -101,7 +101,7 @@ export default function Navbar() {
           <button
             ref={toggle}
             type="button"
-            className="glass glass--pill relative grid h-9 w-9 cursor-pointer place-items-center border-0 p-0 lg:hidden"
+            className="chip relative grid h-9 w-9 cursor-pointer place-items-center border-0 !p-0 lg:hidden"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             aria-controls="mobile-menu"
@@ -126,7 +126,7 @@ export default function Navbar() {
             aria-modal="true"
             aria-label="Site menu"
             className="fixed inset-0 z-[55] flex flex-col justify-center px-8 lg:hidden"
-            style={{ background: "color-mix(in srgb, var(--bg) 62%, transparent)", backdropFilter: "blur(34px) saturate(180%)", WebkitBackdropFilter: "blur(34px) saturate(180%)" }}
+            style={{ background: "color-mix(in srgb, var(--bg) 62%, transparent)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
             variants={menuVariants}
             initial="hidden"
             animate="show"

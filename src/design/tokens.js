@@ -18,10 +18,10 @@ export const radii = {
 };
 
 export const blur = {
-  glass: "24px",
-  glassMobile: "14px",
-  nav: "28px",
-  navScrolled: "44px",
+  glass: "14px",
+  glassMobile: "10px",
+  nav: "16px",
+  navScrolled: "16px",
 };
 
 export const ease = {

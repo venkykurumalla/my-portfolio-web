@@ -15,13 +15,18 @@ export default function Aurora() {
   useGSAP(
     () => {
       if (prefersReducedMotion()) return;
-      gsap.utils.toArray(".aurora-blob").forEach((blob) => {
-        gsap.to(blob, {
-          y: () => -Number(blob.dataset.speed) * 520,
-          ease: "none",
-          scrollTrigger: { trigger: document.documentElement, start: 0, end: "max", scrub: 0.8 },
+      // Parallax blobs are desktop-only; phones get static blobs.
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 1024px) and (hover: hover)", () => {
+        gsap.utils.toArray(".aurora-blob").forEach((blob) => {
+          gsap.to(blob, {
+            y: () => -Number(blob.dataset.speed) * 520,
+            ease: "none",
+            scrollTrigger: { trigger: document.documentElement, start: 0, end: "max", scrub: true },
+          });
         });
       });
+      return () => mm.revert();
     },
     { scope: root },
   );

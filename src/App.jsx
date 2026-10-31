@@ -1,56 +1,39 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import SmoothScroll from "./components/SmoothScroll";
 import Aurora from "./components/Aurora";
-import LiquidFilters from "./components/LiquidFilters";
-import Preloader from "./components/Preloader";
-import CustomCursor from "./components/CustomCursor";
 import ScrollProgress from "./components/ScrollProgress";
 import SectionDots from "./components/SectionDots";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Hero from "./components/sections/Hero";
 import About from "./components/sections/About";
+import { ScrollTrigger } from "./lib/motion";
 
-// Below-the-fold sections are code-split. Their chunks are requested immediately and the
-// preloader waits for them, so ScrollTrigger measures the final layout.
-const loaders = {
-  Skills: () => import("./components/sections/Skills"),
-  Projects: () => import("./components/sections/Projects"),
-  Experience: () => import("./components/sections/Experience"),
-  Education: () => import("./components/sections/Education"),
-  Certifications: () => import("./components/sections/Certifications"),
-  Contact: () => import("./components/sections/Contact"),
-};
-const Skills = lazy(loaders.Skills);
-const Projects = lazy(loaders.Projects);
-const Experience = lazy(loaders.Experience);
-const Education = lazy(loaders.Education);
-const Certifications = lazy(loaders.Certifications);
-const Contact = lazy(loaders.Contact);
-
-const heroImage = new Promise((resolve) => {
-  const img = new Image();
-  img.onload = img.onerror = resolve;
-  img.src = "/VenkateshKurumalla.jpg";
-});
-const nextFrames = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-
-const boot = Promise.all([
-  document.fonts?.ready,
-  heroImage,
-  ...Object.values(loaders).map((load) => load()),
-  new Promise((r) => setTimeout(r, 1900)), // minimum time so the name animation can play
-])
-  .then(nextFrames)
-  .catch(() => {});
+// Below-the-fold sections are code-split. Once their chunks land, ScrollTrigger re-measures.
+const loaders = [
+  () => import("./components/sections/Skills"),
+  () => import("./components/sections/Projects"),
+  () => import("./components/sections/Experience"),
+  () => import("./components/sections/Education"),
+  () => import("./components/sections/Certifications"),
+  () => import("./components/sections/Contact"),
+];
+const [Skills, Projects, Experience, Education, Certifications, Contact] = loaders.map((load) => lazy(load));
 
 export default function App() {
+  useEffect(() => {
+    const refresh = () => ScrollTrigger.refresh();
+    Promise.all(loaders.map((load) => load()))
+      .then(() => requestAnimationFrame(() => requestAnimationFrame(refresh)))
+      .catch(() => {});
+    document.fonts?.ready.then(refresh);
+    window.addEventListener("load", refresh);
+    return () => window.removeEventListener("load", refresh);
+  }, []);
+
   return (
     <SmoothScroll>
-      <LiquidFilters />
       <Aurora />
-      <Preloader boot={boot} />
-      <CustomCursor />
       <ScrollProgress />
       <SectionDots />
       <Navbar />

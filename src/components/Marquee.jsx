@@ -23,7 +23,10 @@ export default function Marquee({ children, direction = 1, speed = 55 }) {
 
       const st = ScrollTrigger.create({
         trigger: root.current, start: "top bottom", end: "bottom top",
-        onToggle: (self) => { visible = self.isActive; },
+        onToggle: (self) => {
+          visible = self.isActive;
+          track.current.style.willChange = visible ? "transform" : "auto";
+        },
       });
 
       const tick = (_t, delta) => {
