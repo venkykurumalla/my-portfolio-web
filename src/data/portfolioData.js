@@ -92,7 +92,7 @@ export const portfolioData = {
       title: "RIET CRT Learning Portal",
       description: "Developed and deployed a web-based learning portal for RIET College to support Campus Recruitment Training (CRT) classes. Created a centralized platform for students to access course modules, learning materials, practice resources, and assessments, helping streamline the delivery of CRT training and student preparation.",
       technologies: ["Web Development", "Learning Management", "Frontend"],
-      link: "https://rietcrt.netlify.app/",
+      link: "https://riet-collegelms.vercel.app/",
       images: [
         "/projects/riet-crt.webp",
         "/projects/riet-crt-1.webp",
